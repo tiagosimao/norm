@@ -8,7 +8,7 @@ import java.sql.SQLException;
 /**
  * Created by tgsimao on 30/07/14.
  */
-public abstract class NormTransaction<INPUT, OUTPUT, ERROR extends Throwable> {
+public abstract class NormTransaction<INPUT, OUTPUT, ERROR extends Exception> {
 
     protected abstract Connection begin() throws NormTransactionBeginException;
 
@@ -21,11 +21,11 @@ public abstract class NormTransaction<INPUT, OUTPUT, ERROR extends Throwable> {
         if (connection == null) {
             throw new NormTransactionBeginException("Got null connection from begin() method");
         }
-        Throwable caught = null;
+        Exception caught = null;
         try {
             result = run(connection, input);
             connection.commit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             caught = e;
             connection.rollback();
         } finally {
