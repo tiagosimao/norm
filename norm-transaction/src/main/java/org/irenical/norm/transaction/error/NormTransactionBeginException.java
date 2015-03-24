@@ -1,9 +1,11 @@
 package org.irenical.norm.transaction.error;
 
+import org.irenical.norm.transaction.NormException;
+
 /**
  * Created by tgsimao on 30/07/14.
  */
-public class NormTransactionBeginException extends RuntimeException {
+public class NormTransactionBeginException extends NormException {
 
 	private static final long serialVersionUID = 6062522651820419695L;
 
