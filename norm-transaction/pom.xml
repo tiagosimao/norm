@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>NORM - Transaction</name>
+    <name>NORM</name>
     <description>NORM's SQL transaction handling classes</description>
     <url>https://github.com/tiagosimao/norm</url>
 

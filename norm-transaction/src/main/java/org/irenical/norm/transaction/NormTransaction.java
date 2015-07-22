@@ -2,156 +2,95 @@ package org.irenical.norm.transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Spliterators;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.function.Function;
 
-import org.irenical.norm.NormBaseOperation;
-import org.irenical.norm.NormResult;
-import org.irenical.norm.NormRow;
-import org.irenical.norm.NormSelect;
-import org.irenical.norm.NormStream;
-import org.irenical.norm.query.NormParameterFetcher;
-import org.irenical.norm.query.NormQueryBuilder;
-import org.irenical.norm.transaction.error.NormTransactionBeginException;
+public class NormTransaction<INPUT> {
 
-public class NormTransaction<POLLER_EXCEPTION extends Throwable> {
+    private ConnectionSupplier connectionSupplier;
 
-	private NormConnectionPoller<POLLER_EXCEPTION> poller;
+    private final List<NormOperation<INPUT>> operations = new LinkedList<>();
 
-	private NormBaseOperation firstOperation;
+    private NormTransaction() {
+    }
 
-	private Connection connection;
+    public static <INPUT> NormTransaction<INPUT> create(ConnectionSupplier connectionSupplier) {
+        NormTransaction<INPUT> result = new NormTransaction<>();
+        result.setConnectionSupplier(connectionSupplier);
+        return result;
+    }
 
-	public void setPoller(NormConnectionPoller<POLLER_EXCEPTION> poller) {
-		this.poller = poller;
-	}
+    public void setConnectionSupplier(ConnectionSupplier connectionSupplier) {
+        this.connectionSupplier = connectionSupplier;
+    }
 
-	private void setup() throws POLLER_EXCEPTION, NormTransactionBeginException, SQLException {
-		if (connection != null) {
-			throw new NormTransactionBeginException("Transaction already in progress");
-		}
-		connection = poller.poll();
-		connection.setAutoCommit(false);
-		if (connection == null) {
-			throw new NormTransactionBeginException("Got no connection from poller");
-		}
-	}
+    public NormTransaction<INPUT> appendSelect(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+        NormSelect<INPUT> select = new NormSelect<>();
+        select.setQueryBuilder(queryBuilder);
+        select.setParametersBuilder(parametersBuilder);
+        select.setResultConsumer(resultConsumer);
+        operations.add(select);
+        return this;
+    }
 
-	private void addOperation(NormBaseOperation operation) {
-		if (firstOperation == null) {
-			firstOperation = operation;
-		} else {
-			NormBaseOperation current = firstOperation;
-			while (current.hasNext()) {
-				current = (NormBaseOperation) current.next();
-			}
-			current.setNext(operation);
-		}
-	}
+    public NormTransaction<INPUT> appendInsert(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+        NormInsert<INPUT> insert = new NormInsert<>();
+        insert.setQueryBuilder(queryBuilder);
+        insert.setParametersBuilder(parametersBuilder);
+        insert.setResultConsumer(resultConsumer);
+        operations.add(insert);
+        return this;
+    }
 
-	public NormTransaction<POLLER_EXCEPTION> selectForEach(NormQueryBuilder queryBuilder, NormParameterFetcher parametersFetcher, Consumer<NormRow> consumer) {
-		NormSelect select = new NormSelect();
-		select.setQueryBuilder(queryBuilder);
-		select.setParameterFetcher(parametersFetcher);
-		select.setConsumer(consumer);
-		addOperation(select);
-		return this;
-	}
-	
-	protected Stream<NormRow> singleSelect(NormQueryBuilder queryBuilder, NormParameterFetcher parametersFetcher) throws NormException, POLLER_EXCEPTION {
-		NormSelect select = new NormSelect();
-		select.setQueryBuilder(queryBuilder);
-		select.setParameterFetcher(parametersFetcher);
-		addOperation(select);
-		try{
-    		setup();
-    		NormResult got = select.execute(connection);
-    		Stream<NormRow> stream = new NormStream<NormRow>(StreamSupport.stream(Spliterators.spliteratorUnknownSize(got, 0), false), transactionInterface);
-    		stream=stream.onClose(()->transactionInterface.commitAndFree());
-    		return stream;
-		} catch(NormException e){
-			transactionInterface.rollbackAndFree();
-			throw e;
-		} catch(Exception e){
-			transactionInterface.rollbackAndFree();
-			throw new NormExecuteOperationException(e);
-		}
-	}
+    public NormTransaction<INPUT> appendUpdate(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+        NormUpdate<INPUT> update = new NormUpdate<>();
+        update.setQueryBuilder(queryBuilder);
+        update.setParametersBuilder(parametersBuilder);
+        update.setResultConsumer(resultConsumer);
+        operations.add(update);
+        return this;
+    }
 
-	public void execute() throws NormExecuteOperationException, POLLER_EXCEPTION, NormTransactionBeginException, SQLException {
-		if(firstOperation!=null){
-    		setup();
-    		for (NormOperation currentOperation = firstOperation; currentOperation!=null; currentOperation = currentOperation.next()) {
-    			try {
-    				NormResult got = currentOperation.execute(connection);
-    				Stream<NormRow> stream = new NormStream<NormRow>(StreamSupport.stream(Spliterators.spliteratorUnknownSize(got, 0), false), transactionInterface);
-    				Consumer<NormRow> consumer = currentOperation.getConsumer();
-    				if (consumer != null) {
-    					if(!currentOperation.hasNext()){
-    						stream=stream.onClose(()->transactionInterface.commitAndFree());
-    					}
-    					stream.forEach(consumer::accept);
-    				} else {
-    					throw new NormExecuteOperationException("No transaction handler for operation: " + currentOperation);
-    				}
-    			} catch (NormExecuteOperationException e) {
-    				transactionInterface.rollbackAndFree();
-    				throw e;
-    			}
-    		}
-		}
-	}
+    public NormTransaction<INPUT> appendDelete(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+        NormUpdate<INPUT> update = new NormUpdate<>();
+        update.setQueryBuilder(queryBuilder);
+        update.setParametersBuilder(parametersBuilder);
+        update.setResultConsumer(resultConsumer);
+        operations.add(update);
+        return this;
+    }
 
-	private void silentClose() {
-		NormBaseOperation current = firstOperation;
-		while (current.hasNext()) {
-			try {
-				current.close();
-			} catch (NormCloseException e) {
-				e.printStackTrace();
-				// ignoring errors while freeing resources
-			} finally {
-				current = (NormBaseOperation) current.next();
-			}
-		}
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			// ignoring errors while freeing resources
-		}
-	}
+    public NormTransaction<INPUT> appendCallable(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+        NormCall<INPUT> call = new NormCall<>();
+        call.setQueryBuilder(queryBuilder);
+        call.setParametersBuilder(parametersBuilder);
+        call.setResultConsumer(resultConsumer);
+        operations.add(call);
+        return this;
+    }
 
-	private final NormTransactionInterface transactionInterface = new NormTransactionInterface() {
-
-		@Override
-		public void rollbackAndFree() {
-			if (connection != null) {
-				try {
-					connection.rollback();
-				} catch (SQLException e) {
-					e.printStackTrace();
-					// ignoring errors while rollbacking
-				} finally {
-					silentClose();
-				}
-			}
-		}
-
-		@Override
-		public void commitAndFree() throws NormCommitException {
-			if (connection != null) {
-				try {
-					connection.commit();
-				} catch (SQLException e) {
-					throw new NormCommitException(e);
-				} finally {
-					silentClose();
-				}
-			}
-		}
-	};
+    public void execute(INPUT a) throws SQLException {
+        Connection connection = null;
+        connection = connectionSupplier.get();
+        try {
+            for (NormOperation<INPUT> operation : operations) {
+                operation.execute(connection, a);
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                // Error while rolling back... ignoring.
+            }
+            throw e;
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
 
 }
