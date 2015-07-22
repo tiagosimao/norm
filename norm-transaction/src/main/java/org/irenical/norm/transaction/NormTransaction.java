@@ -27,7 +27,7 @@ public class NormTransaction<INPUT> {
         this.connectionSupplier = connectionSupplier;
     }
 
-    public NormTransaction<INPUT> appendSelect(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
+    public NormTransaction<INPUT> appendSelect(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NormResultConsumer<INPUT> resultConsumer) {
         NormSelect<INPUT> select = new NormSelect<>();
         select.setQueryBuilder(queryBuilder);
         select.setParametersBuilder(parametersBuilder);
@@ -36,7 +36,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendInsert(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
+    public NormTransaction<INPUT> appendInsert(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NormResultConsumer<INPUT> resultConsumer) {
         NormInsert<INPUT> insert = new NormInsert<>();
         insert.setQueryBuilder(queryBuilder);
         insert.setParametersBuilder(parametersBuilder);
@@ -45,7 +45,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendUpdate(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
+    public NormTransaction<INPUT> appendUpdate(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NormResultConsumer<INPUT> resultConsumer) {
         NormUpdate<INPUT> update = new NormUpdate<>();
         update.setQueryBuilder(queryBuilder);
         update.setParametersBuilder(parametersBuilder);
@@ -54,7 +54,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendDelete(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
+    public NormTransaction<INPUT> appendDelete(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NormResultConsumer<INPUT> resultConsumer) {
         NormUpdate<INPUT> update = new NormUpdate<>();
         update.setQueryBuilder(queryBuilder);
         update.setParametersBuilder(parametersBuilder);
@@ -63,7 +63,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendCallable(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
+    public NormTransaction<INPUT> appendCallable(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NormResultConsumer<INPUT> resultConsumer) {
         NormCall<INPUT> call = new NormCall<>();
         call.setQueryBuilder(queryBuilder);
         call.setParametersBuilder(parametersBuilder);

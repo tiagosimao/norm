@@ -4,7 +4,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
 public class NormResult<INPUT> {
     
@@ -58,7 +57,7 @@ public class NormResult<INPUT> {
         return updatedRows;
     }
     
-    public void consumeGeneratedKeys(Consumer<ResultSet> generatedKeysConsumer) throws SQLException {
+    public void consumeGeneratedKeys(ResultSetConsumer generatedKeysConsumer) throws SQLException {
         try(ResultSet resultset = preparedStatement.getGeneratedKeys()){
             generatedKeysConsumer.accept(resultset);
         }

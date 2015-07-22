@@ -16,7 +16,7 @@ public abstract class NormOperation<INPUT> {
 
     protected Function<INPUT, Iterable<Object>> parametersBuilder;
 
-    protected ResultConsumer<INPUT> resultConsumer;
+    protected NormResultConsumer<INPUT> resultConsumer;
 
     abstract void execute(Connection connection, INPUT a) throws SQLException;
 
@@ -36,11 +36,11 @@ public abstract class NormOperation<INPUT> {
         return queryBuilder;
     }
 
-    public void setResultConsumer(ResultConsumer<INPUT> resultConsumer) {
+    public void setResultConsumer(NormResultConsumer<INPUT> resultConsumer) {
         this.resultConsumer = resultConsumer;
     }
 
-    public ResultConsumer<INPUT> getResultConsumer() {
+    public NormResultConsumer<INPUT> getResultConsumer() {
         return resultConsumer;
     }
 
