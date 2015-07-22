@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class NormOperation<INPUT> {
@@ -17,7 +16,7 @@ public abstract class NormOperation<INPUT> {
 
     protected Function<INPUT, Iterable<Object>> parametersBuilder;
 
-    protected Consumer<NormResult<INPUT>> resultConsumer;
+    protected ResultConsumer<INPUT> resultConsumer;
 
     abstract void execute(Connection connection, INPUT a) throws SQLException;
 
@@ -37,11 +36,11 @@ public abstract class NormOperation<INPUT> {
         return queryBuilder;
     }
 
-    public void setResultConsumer(Consumer<NormResult<INPUT>> resultConsumer) {
+    public void setResultConsumer(ResultConsumer<INPUT> resultConsumer) {
         this.resultConsumer = resultConsumer;
     }
 
-    public Consumer<NormResult<INPUT>> getResultConsumer() {
+    public ResultConsumer<INPUT> getResultConsumer() {
         return resultConsumer;
     }
 

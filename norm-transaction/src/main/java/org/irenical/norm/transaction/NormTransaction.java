@@ -4,8 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.irenical.norm.transaction.error.NormTransactionException;
 
 public class NormTransaction<INPUT> {
 
@@ -26,7 +27,7 @@ public class NormTransaction<INPUT> {
         this.connectionSupplier = connectionSupplier;
     }
 
-    public NormTransaction<INPUT> appendSelect(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+    public NormTransaction<INPUT> appendSelect(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
         NormSelect<INPUT> select = new NormSelect<>();
         select.setQueryBuilder(queryBuilder);
         select.setParametersBuilder(parametersBuilder);
@@ -35,7 +36,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendInsert(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+    public NormTransaction<INPUT> appendInsert(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
         NormInsert<INPUT> insert = new NormInsert<>();
         insert.setQueryBuilder(queryBuilder);
         insert.setParametersBuilder(parametersBuilder);
@@ -44,7 +45,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendUpdate(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+    public NormTransaction<INPUT> appendUpdate(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
         NormUpdate<INPUT> update = new NormUpdate<>();
         update.setQueryBuilder(queryBuilder);
         update.setParametersBuilder(parametersBuilder);
@@ -53,7 +54,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendDelete(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+    public NormTransaction<INPUT> appendDelete(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
         NormUpdate<INPUT> update = new NormUpdate<>();
         update.setQueryBuilder(queryBuilder);
         update.setParametersBuilder(parametersBuilder);
@@ -62,7 +63,7 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT> appendCallable(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, Consumer<NormResult<INPUT>> resultConsumer) {
+    public NormTransaction<INPUT> appendCallable(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, ResultConsumer<INPUT> resultConsumer) {
         NormCall<INPUT> call = new NormCall<>();
         call.setQueryBuilder(queryBuilder);
         call.setParametersBuilder(parametersBuilder);
@@ -71,9 +72,19 @@ public class NormTransaction<INPUT> {
         return this;
     }
 
+    public void execute() throws SQLException {
+        execute(null);
+    }
+
     public void execute(INPUT a) throws SQLException {
+        if (connectionSupplier == null) {
+            throw new NormTransactionException("No connection supplier for this transaction");
+        }
         Connection connection = null;
         connection = connectionSupplier.get();
+        if (connection == null) {
+            throw new NormTransactionException("Null connection supplied to this transaction");
+        }
         try {
             for (NormOperation<INPUT> operation : operations) {
                 operation.execute(connection, a);
