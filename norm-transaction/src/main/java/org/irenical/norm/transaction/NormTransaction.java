@@ -32,6 +32,10 @@ public class NormTransaction<INPUT> {
         select.setQueryBuilder(queryBuilder);
         select.setParametersBuilder(parametersBuilder);
         select.setResultConsumer(resultConsumer);
+        return appendSelect(select);
+    }
+    
+    public NormTransaction<INPUT> appendSelect(NormSelect<INPUT> select) {
         operations.add(select);
         return this;
     }
@@ -41,6 +45,10 @@ public class NormTransaction<INPUT> {
         insert.setQueryBuilder(queryBuilder);
         insert.setParametersBuilder(parametersBuilder);
         insert.setResultConsumer(resultConsumer);
+        return appendInsert(insert);
+    }
+
+    public NormTransaction<INPUT> appendInsert(NormInsert<INPUT> insert) {
         operations.add(insert);
         return this;
     }
@@ -50,16 +58,24 @@ public class NormTransaction<INPUT> {
         update.setQueryBuilder(queryBuilder);
         update.setParametersBuilder(parametersBuilder);
         update.setResultConsumer(resultConsumer);
+        return appendUpdate(update);
+    }
+
+    public NormTransaction<INPUT> appendUpdate(NormUpdate<INPUT> update) {
         operations.add(update);
         return this;
     }
 
     public NormTransaction<INPUT> appendDelete(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NormResultConsumer<INPUT> resultConsumer) {
-        NormUpdate<INPUT> update = new NormUpdate<>();
-        update.setQueryBuilder(queryBuilder);
-        update.setParametersBuilder(parametersBuilder);
-        update.setResultConsumer(resultConsumer);
-        operations.add(update);
+        NormDelete<INPUT> delete = new NormDelete<>();
+        delete.setQueryBuilder(queryBuilder);
+        delete.setParametersBuilder(parametersBuilder);
+        delete.setResultConsumer(resultConsumer);
+        return appendDelete(delete);
+    }
+    
+    public NormTransaction<INPUT> appendDelete(NormUpdate<INPUT> delete) {
+        operations.add(delete);
         return this;
     }
 
@@ -68,6 +84,10 @@ public class NormTransaction<INPUT> {
         call.setQueryBuilder(queryBuilder);
         call.setParametersBuilder(parametersBuilder);
         call.setResultConsumer(resultConsumer);
+        return appendCallable(call);
+    }
+
+    public NormTransaction<INPUT> appendCallable(NormCall<INPUT> call) {
         operations.add(call);
         return this;
     }

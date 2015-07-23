@@ -92,8 +92,7 @@ public class TransactionTest {
 
     @Test
     public void testCreateCallable() {
-        // NormTransaction.create(connectionSupplier).appendCallable(inocuousQueryBuilder,
-        // inocuousParameterBuilder, resultConsumer);
+        // TODO test procedure with IN parameters, OUT parameters, INOUT parameters and an unhealthy mix of them all
     }
 
     @Test(expected = NormTransactionException.class)

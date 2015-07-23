@@ -1,15 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.irenical.norm</groupId>
-  <artifactId>norm-query</artifactId>
+  <artifactId>norm-query-postgresql</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-
-  <name>NORM Query Builder</name>
-  <description>NORM's SQL query handling classes</description>
+  <name>NORM Transaction Builder</name>
+  <description>NORM's SQL query builder for PostgreSQL</description>
   <url>https://github.com/tiagosimao/norm</url>
 
   <organization>
@@ -127,6 +125,11 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.irenical.norm</groupId>
+      <artifactId>norm-query</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
