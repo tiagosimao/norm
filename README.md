@@ -1,7 +1,7 @@
 # NORM
 <b>Not an O.R.M.</b>
 
-Easy to use, lightweight java framework, built on top of JDBC that allows you to build high performance DB access, without the typical productivity and reliability penalties of not using an ORM.
+Easy to use, lightweight java framework, built on top of JDBC that allows you to build high performance DB access for your Java applications, without the typical productivity and reliability penalties of not using an ORM.
 
 <b>Things you can do with NORM</b>  
 - Preventing resource leaks caused by developer error, such as unclosed connections, result sets or statements  
