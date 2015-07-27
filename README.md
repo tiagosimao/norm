@@ -15,18 +15,18 @@ Easy to use, lightweight java framework, built on top of JDBC that allows you to
 
 <h2>NORM Modules</h2>
 <h3>Norm Transaction</h3> (optional)
-Transaction and SQL operations handling
-Plugs to any connection pool
-JDBC driver agnostic
-Ensures resource release
+- Transaction and SQL operations handling
+- Plugs to any connection pool
+- JDBC driver agnostic
+- Ensures resource release
 
 <h3>Norm Query</h3> (optional)
-Simple generic query builder
-Sub-modules for different JDBC drivers to further help in query building
+- Simple generic query builder
+- Sub-modules for different JDBC drivers to further help in query building
 
 <h3>Norm Graph</h3> (optional)
-Maps JDBC ResultSet to object graph
+- Maps JDBC ResultSet to object graph
 
 <h3>NORM</h3> (very optional)
-Glues the other modules together to simplify the usage
-Less suited for a multiple framework context
+- Glues the other modules together to simplify the usage
+- Less suited for a multiple framework context
