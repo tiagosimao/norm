@@ -1,40 +1,39 @@
 package org.irenical.norm.query;
 
-import java.util.LinkedList;
 import java.util.List;
 
-public class NormQueryBuilder {
-    
-    private static final char VALUE = '?';
+public interface NormQueryBuilder<BUILDER_CLASS extends NormQueryBuilder<BUILDER_CLASS>> {
 
-    private final List<Object> parameters = new LinkedList<Object>();
+    public abstract List<Object> getParameters();
 
-    private final StringBuilder sb = new StringBuilder();
+    public abstract String getQuery();
 
-    private NormQueryBuilder(){
-    }
+    /**
+     * Append literal value
+     * @param sql - the SQL query fragment to be appended
+     * @return the builder
+     */
+    public abstract BUILDER_CLASS literal(String sql);
     
-    public static NormQueryBuilder create(){
-        return new NormQueryBuilder();
-    }
     
-    public List<Object> getParameters() {
-        return parameters;
-    }
+    public abstract BUILDER_CLASS literals(Iterable<String> sql, String prefix, String suffix, String separator);
+    
+    /**
+     * Append a value. A ? will be appended to the query 
+     * @param value - the object representing the value
+     * @return the builder
+     */
+    public abstract BUILDER_CLASS value(Object value);
+    
+    /**
+     * Append multiple values. A ? will be appended to the query for each value
+     * Useful for IN expressions
+     * @param values - the objects representing the values
+     * @param prefix - a literal prepended to the values
+     * @param suffix - a literal postpended to the values
+     * @param separator - a literal separating each value
+     * @return the builder
+     */
+    public abstract BUILDER_CLASS values(Iterable<Object> values, String prefix, String suffix, String separator);
 
-    public String getQuery() {
-        return sb.toString();
-    }
-    
-    public NormQueryBuilder literal(String sql){
-        sb.append(sql);
-        return this;
-    }
-    
-    public NormQueryBuilder value(Object value){
-        sb.append(VALUE);
-        parameters.add(value);
-        return this;
-    }
-    
 }
