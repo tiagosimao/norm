@@ -2,7 +2,6 @@ package org.irenical.norm.query.postgresql;
 
 import org.irenical.norm.query.NormQueryBuilder;
 
-
 public interface PGSelect extends PGExpression, NormQueryBuilder<PGSelect> {
 
     PGSelect with();
@@ -17,15 +16,15 @@ public interface PGSelect extends PGExpression, NormQueryBuilder<PGSelect> {
 
     PGSelect asterisk();
 
-    PGSelect from(String ... entities);
+    PGSelect from(Object... entities);
 
-    PGSelect where();
+    PGSelect where(Object... that);
 
     PGSelect groupby();
 
     PGSelect having();
 
-    PGSelect as();
+    PGSelect as(Object... alias);
 
     PGSelect union();
 
@@ -47,9 +46,9 @@ public interface PGSelect extends PGExpression, NormQueryBuilder<PGSelect> {
 
     PGSelect nullsLast();
 
-    PGSelect limit();
+    PGSelect limit(int... limit);
 
-    PGSelect offset();
+    PGSelect offset(int... offset);
 
     PGSelect join();
 
@@ -70,5 +69,5 @@ public interface PGSelect extends PGExpression, NormQueryBuilder<PGSelect> {
     PGSelect naturalRightJoin();
 
     PGSelect naturalFullJoin();
-    
+
 }

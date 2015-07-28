@@ -13,10 +13,17 @@ public interface NormQueryBuilder<BUILDER_CLASS extends NormQueryBuilder<BUILDER
      * @param sql - the SQL query fragment to be appended
      * @return the builder
      */
-    public abstract BUILDER_CLASS literal(String sql);
+    public abstract BUILDER_CLASS literal(Object sql);
     
     
-    public abstract BUILDER_CLASS literals(Iterable<String> sql, String prefix, String suffix, String separator);
+    public abstract BUILDER_CLASS literals(Iterable<Object> sql, String prefix, String suffix, String separator);
+    
+    /**
+     * Append builder
+     * @param sql
+     * @return
+     */
+    public abstract BUILDER_CLASS builder(NormQueryBuilder<?>... builders);
     
     /**
      * Append a value. A ? will be appended to the query 

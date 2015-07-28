@@ -25,22 +25,48 @@ public abstract class NormBaseQueryBuilder<BUILDER_CLASS extends NormQueryBuilde
     }
 
     @Override
-    public BUILDER_CLASS literal(String sql) {
-        sb.append(sql);
+    public BUILDER_CLASS builder(NormQueryBuilder<?>... builders) {
+        if (builders != null) {
+            for (NormQueryBuilder<?> builder : builders) {
+                if (builder != null) {
+                    sb.append(builder.getQuery());
+                    List<Object> builderParams = builder.getParameters();
+                    if (builderParams != null) {
+                        parameters.addAll(builderParams);
+                    }
+                }
+            }
+        }
         return (BUILDER_CLASS) this;
     }
 
     @Override
-    public BUILDER_CLASS literals(Iterable<String> sql, String prefix, String suffix, String separator) {
+    public BUILDER_CLASS literal(Object sql) {
+        return smartLiteral(sql);
+    }
+    
+    private BUILDER_CLASS smartLiteral(Object sql) {
+        if (sql instanceof NormQueryBuilder<?>) {
+            return builder((NormQueryBuilder<?>) sql);
+        } else {
+            sb.append(sql);
+            return (BUILDER_CLASS) this;
+        }
+    }
+
+    @Override
+    public BUILDER_CLASS literals(Iterable<Object> sql, String prefix, String suffix, String separator) {
         if (sql != null) {
             boolean first = true;
             for (Object s : sql) {
-                if (first && prefix != null) {
-                    sb.append(prefix);
+                if (first) {
+                    if (prefix != null) {
+                        sb.append(prefix);
+                    }
                 } else if (separator != null) {
                     sb.append(separator);
                 }
-                sb.append(s);
+                smartLiteral(s);
                 first = false;
             }
             if (!first && suffix != null) {
@@ -52,9 +78,17 @@ public abstract class NormBaseQueryBuilder<BUILDER_CLASS extends NormQueryBuilde
 
     @Override
     public BUILDER_CLASS value(Object value) {
-        sb.append(VALUE);
-        parameters.add(value);
-        return (BUILDER_CLASS) this;
+        return smartValue(value);
+    }
+    
+    private BUILDER_CLASS smartValue(Object value) {
+        if (value instanceof NormQueryBuilder<?>) {
+            return builder((NormQueryBuilder<?>) value);
+        } else {
+            sb.append(VALUE);
+            parameters.add(value);
+            return (BUILDER_CLASS) this;
+        }
     }
 
     @Override
@@ -62,13 +96,14 @@ public abstract class NormBaseQueryBuilder<BUILDER_CLASS extends NormQueryBuilde
         if (values != null) {
             boolean first = true;
             for (Object value : values) {
-                if (first && prefix != null) {
-                    sb.append(prefix);
+                if (first) {
+                    if (prefix != null) {
+                        sb.append(prefix);
+                    }
                 } else if (separator != null) {
                     sb.append(separator);
                 }
-                sb.append(VALUE);
-                parameters.add(value);
+                smartValue(value);
                 first = false;
             }
             if (!first && suffix != null) {

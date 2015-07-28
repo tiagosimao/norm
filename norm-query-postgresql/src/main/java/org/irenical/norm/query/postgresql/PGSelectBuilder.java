@@ -16,8 +16,12 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect as() {
-        return literal("as");
+    public PGSelect as(Object... alias) {
+        if (alias == null || alias.length == 0) {
+            return literal("as");
+        } else {
+            return literal("as").literal(alias[0]);
+        }
     }
 
     @Override
@@ -96,8 +100,8 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGExpression eq() {
-        return super.literal("=");
+    public PGSelect not() {
+        return literal("not");
     }
 
     @Override
@@ -106,7 +110,7 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect from(String... from) {
+    public PGSelect from(Object... from) {
         return literal("from").literals(Arrays.asList(from), " ", null, ",");
 
     }
@@ -117,43 +121,109 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGExpression gt() {
-        return super.literal(">");
-    }
-
-    @Override
-    public PGExpression lte() {
-        return super.literal("<=");
-    }
-
-    @Override
-    public PGExpression lt() {
-        return super.literal("<");
-    }
-
-    @Override
-    public PGExpression gte() {
-        return super.literal(">=");
-    }
-
-    @Override
     public PGSelect having() {
         return literal("having");
     }
 
     @Override
-    public PGExpression ilike() {
-        return literal("ilike");
+    public PGSelect in(Object... these) {
+        if (these == null || these.length == 0) {
+            return literal("in");
+        } else {
+            return eq(these);
+        }
     }
 
     @Override
-    public PGExpression in() {
-        return literal("in");
+    public PGSelect eq(Object... that) {
+        if (that != null) {
+            if (that.length == 1) {
+                if (that[0] == null) {
+                    return literal("is null");
+                } else {
+                    return super.literal("=").value(that[0]);
+                }
+            } else {
+                return values(Arrays.asList(that), " in(", ")", ",");
+            }
+        } else {
+            return super.literal("=");
+        }
     }
 
     @Override
-    public PGExpression like() {
-        return literal("like");
+    public PGSelect notEq(Object... that) {
+        if (that != null) {
+            if (that.length == 1) {
+                if (that[0] == null) {
+                    return literal("is not null");
+                } else {
+                    return super.literal("!=").value(that[0]);
+                }
+            } else {
+                return not().in(that);
+            }
+        } else {
+            return super.literal("!=");
+        }
+    }
+
+    private PGSelect binaryOperation(String op, Object... that) {
+        if (that == null || that.length == 0) {
+            return super.literal(op);
+        } else {
+            return super.literal(op).value(that[0]);
+        }
+    }
+
+    @Override
+    public PGSelect gt(Object... that) {
+        return binaryOperation(">", that);
+    }
+
+    @Override
+    public PGSelect lte(Object... that) {
+        return binaryOperation("<=", that);
+    }
+
+    @Override
+    public PGSelect lt(Object... that) {
+        return binaryOperation("<", that);
+    }
+
+    @Override
+    public PGSelect gte(Object... that) {
+        return binaryOperation(">=", that);
+    }
+
+    @Override
+    public PGSelect ilike(Object... that) {
+        return binaryOperation("ilike", that);
+    }
+
+    @Override
+    public PGSelect like(Object... that) {
+        return binaryOperation("like", that);
+    }
+
+    @Override
+    public PGSelect divide(Object... that) {
+        return binaryOperation("/", that);
+    }
+
+    @Override
+    public PGSelect multiply(Object... that) {
+        return binaryOperation("*", that);
+    }
+
+    @Override
+    public PGSelect minus(Object... that) {
+        return binaryOperation("-", that);
+    }
+
+    @Override
+    public PGSelect plus(Object... that) {
+        return binaryOperation("+", that);
     }
 
     @Override
@@ -162,8 +232,19 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect limit() {
-        return literal("limit");
+    public PGSelect limit(int... limit) {
+        if (limit != null && limit.length > 0) {
+            return literal("limit ").value(limit[0]);
+        }
+        return literal("limit ");
+    }
+
+    @Override
+    public PGSelect offset(int... offset) {
+        if (offset != null && offset.length > 0) {
+            return literal("offset ").value(offset[0]);
+        }
+        return literal("offset ");
     }
 
     @Override
@@ -174,11 +255,6 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     @Override
     public PGSelect nullsLast() {
         return literal("nulls last");
-    }
-
-    @Override
-    public PGSelect offset() {
-        return literal("offset");
     }
 
     @Override
@@ -202,8 +278,13 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect where() {
-        return literal("where");
+    public PGSelect where(Object... that) {
+        if (that == null || that.length == 0) {
+            return literal("where");
+        } else {
+            return literal("where").literal(that[0]);
+        }
+
     }
 
     @Override
@@ -215,9 +296,9 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     public PGSelect with() {
         return null;
     }
-    
+
     @Override
-    public PGSelect literal(String sql) {
+    public PGSelect literal(Object sql) {
         super.literal(" ");
         return super.literal(sql);
     }
