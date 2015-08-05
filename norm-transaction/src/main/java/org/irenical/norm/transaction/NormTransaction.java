@@ -9,7 +9,7 @@ import java.util.function.Function;
 import org.irenical.norm.transaction.error.NormTransactionException;
 
 public class NormTransaction<INPUT> {
-    
+
     private NormTransactionHook hook;
 
     private ConnectionSupplier connectionSupplier;
@@ -28,11 +28,11 @@ public class NormTransaction<INPUT> {
     public void setConnectionSupplier(ConnectionSupplier connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
     }
-    
+
     public void setHook(NormTransactionHook hook) {
         this.hook = hook;
     }
-    
+
     public NormTransactionHook getHook() {
         return hook;
     }
@@ -44,7 +44,7 @@ public class NormTransaction<INPUT> {
         select.setResultConsumer(resultConsumer);
         return appendSelect(select);
     }
-    
+
     public NormTransaction<INPUT> appendSelect(NormSelect<INPUT> select) {
         operations.add(select);
         return this;
@@ -83,7 +83,7 @@ public class NormTransaction<INPUT> {
         delete.setResultConsumer(resultConsumer);
         return appendDelete(delete);
     }
-    
+
     public NormTransaction<INPUT> appendDelete(NormUpdate<INPUT> delete) {
         operations.add(delete);
         return this;
@@ -110,7 +110,9 @@ public class NormTransaction<INPUT> {
         if (connectionSupplier == null) {
             throw new NormTransactionException("No connection supplier for this transaction");
         }
-        hook.transactionStarted(this,a);
+        if (hook != null) {
+            hook.transactionStarted(this, a);
+        }
         Connection connection = null;
         connection = connectionSupplier.get();
         if (connection == null) {
@@ -118,9 +120,13 @@ public class NormTransaction<INPUT> {
         }
         try {
             for (NormOperation<INPUT> operation : operations) {
-                hook.operationStarted(this,operation,a);
+                if (hook != null) {
+                    hook.operationStarted(this, operation, a);
+                }
                 operation.execute(connection, a);
-                hook.operationEnded(this,operation,a);
+                if (hook != null) {
+                    hook.operationEnded(this, operation, a);
+                }
             }
             connection.commit();
         } catch (SQLException e) {
@@ -133,7 +139,9 @@ public class NormTransaction<INPUT> {
         } finally {
             if (connection != null) {
                 connection.close();
-                hook.transactionEnded(this,a);
+                if(hook!=null){
+                    hook.transactionEnded(this, a);
+                }
             }
         }
     }

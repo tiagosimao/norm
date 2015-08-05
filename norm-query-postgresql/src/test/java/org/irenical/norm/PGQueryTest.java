@@ -86,5 +86,14 @@ public class PGQueryTest {
         Assert.assertEquals(expectedParams, qb.getParameters());
         
     }
+    
+    @Test
+    public void testExpression(){
+        String expected = "select count(id) from dudes where age>? and(name ilike ? or surname ilike ?)";
+        List<Object> expectedParams = Arrays.asList(20,"%joe%","%joe%");
+        
+//        PGQueryBuilder condition = PGQueryBuilder.expression("age").gt(20).and(PGQueryBuilder.expression("name").ilike("%joe%").or("surname").ilike("%joe%"));
+//        PGQueryBuilder select = PGQueryBuilder.select("count(id)").from("dudes").where(condition);
+    }
 
 }

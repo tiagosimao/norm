@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.function.Function;
 
 import org.irenical.norm.transaction.error.NormTransactionException;

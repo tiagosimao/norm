@@ -14,7 +14,9 @@ public class NormInsert<INPUT> extends NormOperation<INPUT> {
             result.setInput(a);
             result.setPreparedStatement(statement);
             result.setUpdatedRows(count);
-            resultConsumer.accept(result);
+            if(resultConsumer!=null){
+                resultConsumer.accept(result);
+            }
         }
     }
 

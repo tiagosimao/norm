@@ -2,7 +2,7 @@ package org.irenical.norm.query.postgresql;
 
 import org.irenical.norm.query.NormQueryBuilder;
 
-public interface PGSelect extends PGExpression, NormQueryBuilder<PGSelect> {
+public interface PGSelect extends PGExpression<PGSelect>, NormQueryBuilder<PGSelect> {
 
     PGSelect with();
 

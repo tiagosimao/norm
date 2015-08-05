@@ -161,7 +161,8 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
                     return super.literal("!=").value(that[0]);
                 }
             } else {
-                return not().in(that);
+                literal("not");
+                return in(that);
             }
         } else {
             return super.literal("!=");

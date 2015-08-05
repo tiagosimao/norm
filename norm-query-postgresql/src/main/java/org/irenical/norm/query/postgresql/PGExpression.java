@@ -1,33 +1,35 @@
 package org.irenical.norm.query.postgresql;
 
-public interface PGExpression {
+import org.irenical.norm.query.NormQueryBuilder;
+
+public interface PGExpression<BUILDER_CLASS extends NormQueryBuilder<BUILDER_CLASS>> extends NormQueryBuilder<BUILDER_CLASS> {
     
-    PGSelect not();
+    BUILDER_CLASS not();
     
-    PGSelect notEq(Object... that);
+    BUILDER_CLASS notEq(Object... that);
 
-    PGSelect eq(Object... that);
+    BUILDER_CLASS eq(Object... that);
     
-    PGSelect gt(Object... that);
+    BUILDER_CLASS gt(Object... that);
 
-    PGSelect gte(Object... that);
+    BUILDER_CLASS gte(Object... that);
 
-    PGSelect divide(Object... that);
+    BUILDER_CLASS divide(Object... that);
 
-    PGSelect multiply(Object... that);
+    BUILDER_CLASS multiply(Object... that);
 
-    PGSelect minus(Object... that);
+    BUILDER_CLASS minus(Object... that);
 
-    PGSelect plus(Object... that);
+    BUILDER_CLASS plus(Object... that);
 
-    PGSelect lt(Object... than);
+    BUILDER_CLASS lt(Object... than);
 
-    PGSelect lte(Object... that);
+    BUILDER_CLASS lte(Object... that);
 
-    PGSelect in(Object... that);
+    BUILDER_CLASS in(Object... that);
 
-    PGSelect like(Object... that);
+    BUILDER_CLASS like(Object... that);
 
-    PGSelect ilike(Object... that);
+    BUILDER_CLASS ilike(Object... that);
 
 }
