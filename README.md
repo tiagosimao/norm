@@ -20,6 +20,15 @@ Easy to use, lightweight java framework, built on top of JDBC that allows you to
 - JDBC driver agnostic
 - Ensures resource release
 
+```maven
+<dependency>
+  <groupId>org.irenical.norm</groupId>
+  <artifactId>norm-transaction</artifactId>
+  <version>0.1</version>
+</dependency>
+```
+    
+
 <h3>Norm Query</h3> (optional)
 - Simple generic query builder
 - Sub-modules for different JDBC drivers to further help in query building
