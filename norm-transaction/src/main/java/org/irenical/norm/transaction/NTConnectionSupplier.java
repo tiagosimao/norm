@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface ConnectionSupplier {
+public interface NTConnectionSupplier {
     
     Connection get() throws SQLException;
 

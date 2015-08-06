@@ -1,22 +1,20 @@
 package org.irenical.norm.transaction;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class NormInsert<INPUT> extends NormOperation<INPUT> {
+public class NormInsert<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
 
     @Override
-    void execute(Connection connection, INPUT a) throws SQLException {
-        try (PreparedStatement statement = prepareStatementForInsert(connection, queryBuilder.apply(a), parametersBuilder.apply(a))) {
+    OUTPUT execute(NTContext<INPUT, OUTPUT> context) throws SQLException {
+        try (PreparedStatement statement = JDBChops.prepareStatementForInsert(context.getConnection(), queryBuilder.apply(context.getInput()), parametersBuilder.apply(context.getInput()))) {
             int count = statement.executeUpdate();
-            NormResult<INPUT> result = new NormResult<>();
-            result.setInput(a);
-            result.setPreparedStatement(statement);
-            result.setUpdatedRows(count);
-            if(resultConsumer!=null){
-                resultConsumer.accept(result);
+            context.setPreparedStatement(statement);
+            context.setUpdatedRows(count);
+            if (outputReader != null) {
+                return outputReader.toOutput(context);
             }
+            return null;
         }
     }
 

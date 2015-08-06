@@ -1,20 +1,17 @@
 package org.irenical.norm.transaction;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class NormCall<INPUT> extends NormOperation<INPUT> {
+public class NormCall<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
 
     @Override
-    void execute(Connection connection, INPUT a) throws SQLException {
-        try (PreparedStatement statement = prepareStatementForCall(connection, queryBuilder.apply(a), parametersBuilder.apply(a))) {
+    OUTPUT execute(NTContext<INPUT, OUTPUT> context) throws SQLException {
+        try (PreparedStatement statement = JDBChops.prepareStatementForCall(context.getConnection(), queryBuilder.apply(context.getInput()), parametersBuilder.apply(context.getInput()))) {
             int count = statement.executeUpdate();
-            NormResult<INPUT> result = new NormResult<>();
-            result.setInput(a);
-            result.setPreparedStatement(statement);
-            result.setUpdatedRows(count);
-            resultConsumer.accept(result);
+            context.setPreparedStatement(statement);
+            context.setUpdatedRows(count);
+            return outputReader.toOutput(context);
         }
     }
 

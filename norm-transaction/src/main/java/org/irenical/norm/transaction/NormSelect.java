@@ -1,33 +1,27 @@
 package org.irenical.norm.transaction;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.irenical.norm.transaction.error.NormTransactionException;
 
-public class NormSelect<INPUT> extends NormOperation<INPUT> {
+public class NormSelect<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
 
     @Override
-    void execute(Connection connection, INPUT a) throws SQLException {
-        if (connection == null) {
-            throw new NormTransactionException("No connection for this select operation " + this);
-        }
+    OUTPUT execute(NTContext<INPUT, OUTPUT> context) throws SQLException {
         if (queryBuilder == null) {
-            throw new NormTransactionException("No query builder for this select operation " + this);
+            throw new NormTransactionException("No query builder was provided for this select operation " + this);
         }
-        String query = queryBuilder.apply(a);
+        String query = queryBuilder.apply(context.getInput());
         if (query == null || query.isEmpty()) {
-            throw new NormTransactionException("Null or empty query for this select operation " + this);
+            throw new NormTransactionException("A null or empty query was provided for this select operation " + this);
         }
-        try (PreparedStatement statement = prepareStatementForSelectOrUpdate(connection, query, parametersBuilder == null ? null : parametersBuilder.apply(a))) {
+        try (PreparedStatement statement = JDBChops.prepareStatementForSelectOrUpdate(context.getConnection(), query, parametersBuilder == null ? null : parametersBuilder.apply(context.getInput()))) {
             try (ResultSet resultSet = statement.executeQuery()) {
-                NormResult<INPUT> result = new NormResult<>();
-                result.setInput(a);
-                result.setPreparedStatement(statement);
-                result.setResultset(resultSet);
-                resultConsumer.accept(result);
+                context.setPreparedStatement(statement);
+                context.setResultset(resultSet);
+                return outputReader.toOutput(context);
             }
         }
     }

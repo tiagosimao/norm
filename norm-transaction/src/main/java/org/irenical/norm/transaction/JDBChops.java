@@ -8,55 +8,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.function.Function;
 
-public abstract class NormOperation<INPUT> {
+public class JDBChops {
 
-    protected Function<INPUT, String> queryBuilder;
-
-    protected Function<INPUT, Iterable<Object>> parametersBuilder;
-
-    protected NormResultConsumer<INPUT> resultConsumer;
-
-    abstract void execute(Connection connection, INPUT a) throws SQLException;
-
-    public void setParametersBuilder(Function<INPUT, Iterable<Object>> parametersBuilder) {
-        this.parametersBuilder = parametersBuilder;
-    }
-
-    public void setQueryBuilder(Function<INPUT, String> queryBuilder) {
-        this.queryBuilder = queryBuilder;
-    }
-
-    public Function<INPUT, Iterable<Object>> getParametersBuilder() {
-        return parametersBuilder;
-    }
-
-    public Function<INPUT, String> getQueryBuilder() {
-        return queryBuilder;
-    }
-
-    public void setResultConsumer(NormResultConsumer<INPUT> resultConsumer) {
-        this.resultConsumer = resultConsumer;
-    }
-
-    public NormResultConsumer<INPUT> getResultConsumer() {
-        return resultConsumer;
-    }
-
-    protected PreparedStatement prepareStatementForInsert(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
+    public static PreparedStatement prepareStatementForInsert(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         prepareInput(statement, parameters);
         return statement;
     }
 
-    protected PreparedStatement prepareStatementForSelectOrUpdate(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
+    public static PreparedStatement prepareStatementForSelectOrUpdate(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(query);
         prepareInput(statement, parameters);
         return statement;
     }
 
-    protected PreparedStatement prepareStatementForCall(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
+    public static PreparedStatement prepareStatementForCall(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
         CallableStatement statement = connection.prepareCall(query);
         if (parameters != null) {
             int idx = 0;
@@ -71,7 +38,7 @@ public abstract class NormOperation<INPUT> {
         return statement;
     }
 
-    private static void prepareInput(PreparedStatement preparedStatement, Iterable<Object> parameters) throws SQLException {
+    public static void prepareInput(PreparedStatement preparedStatement, Iterable<Object> parameters) throws SQLException {
         if (parameters != null) {
             int idx = 0;
             for (Object param : parameters) {
@@ -80,7 +47,7 @@ public abstract class NormOperation<INPUT> {
         }
     }
 
-    private static void setInput(PreparedStatement preparedStatement, int idx, Object value) throws SQLException {
+    public static void setInput(PreparedStatement preparedStatement, int idx, Object value) throws SQLException {
         if (value instanceof Timestamp) {
             preparedStatement.setTimestamp(idx, (Timestamp) value);
         } else if (value instanceof Time) {
@@ -94,7 +61,7 @@ public abstract class NormOperation<INPUT> {
         }
     }
 
-    private static void setOutput(CallableStatement preparedStatement, int idx, Object value) throws SQLException {
+    public static void setOutput(CallableStatement preparedStatement, int idx, Object value) throws SQLException {
         if (value instanceof String) {
             preparedStatement.registerOutParameter(idx, java.sql.Types.VARCHAR);
         } else if (value instanceof Float) {
