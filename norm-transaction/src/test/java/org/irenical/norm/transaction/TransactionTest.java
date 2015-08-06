@@ -58,7 +58,7 @@ public class TransactionTest {
     public void testCreateInsertUpdateDelete() throws SQLException {
         NormTransaction<String, Integer> t = new NormTransaction<String, Integer>(connectionSupplier);
         t.appendInsert((in) -> "INSERT INTO PEOPLE (NAME) VALUES (?)", (in) -> Arrays.asList(in), (context) -> {
-            return context.getGeneratedKeyAsInteger();
+            return context.getFirstGeneratedKeyAsInteger();
         });
         t.appendSelect((in) -> "SELECT PERSON_ID FROM PEOPLE WHERE NAME=?", (in) -> Arrays.asList(in), (context) -> {
             ResultSet rs = context.getResultset();

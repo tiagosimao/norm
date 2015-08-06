@@ -111,8 +111,8 @@ public class NTContext<INPUT, OUTPUT> {
         return updatedRows;
     }
 
-    public Integer getGeneratedKeyAsInteger() throws SQLException {
-        Object got = getGeneratedKey();
+    public Integer getFirstGeneratedKeyAsInteger() throws SQLException {
+        Object got = getFirstGeneratedKey();
         if(got instanceof Number){
             return ((Number) got).intValue();
         } else {
@@ -120,10 +120,14 @@ public class NTContext<INPUT, OUTPUT> {
         }
     }
 
-    public Object getGeneratedKey() throws SQLException {
-        List<Map<String, Object>> generatedKeys = getGeneratedKeys();
-        Map<String, Object> firstRow = generatedKeys.isEmpty() ? null : generatedKeys.get(0);
+    public Object getFirstGeneratedKey() throws SQLException {
+        Map<String, Object> firstRow = getFirstGeneratedKeys();
         return firstRow == null || firstRow.isEmpty() ? null : firstRow.entrySet().iterator().next().getValue();
+    }
+    
+    public Map<String, Object> getFirstGeneratedKeys() throws SQLException {
+        List<Map<String, Object>> generatedKeys = getGeneratedKeys();
+        return generatedKeys.isEmpty() ? null : generatedKeys.get(0);
     }
 
     public List<Map<String, Object>> getGeneratedKeys() throws SQLException {
