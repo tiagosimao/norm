@@ -11,7 +11,10 @@ public class NormUpdate<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
             int count = statement.executeUpdate();
             context.setPreparedStatement(statement);
             context.setUpdatedRows(count);
-            return outputReader.toOutput(context);
+            if (outputReader != null) {
+                return outputReader.toOutput(context);
+            }
+            return null;
         }
     }
 
