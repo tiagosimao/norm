@@ -21,7 +21,10 @@ public class NormSelect<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
             try (ResultSet resultSet = statement.executeQuery()) {
                 context.setPreparedStatement(statement);
                 context.setResultset(resultSet);
-                return outputReader.toOutput(context);
+                if (outputReader != null) {
+                    return outputReader.toOutput(context);
+                }
+                return null;
             }
         }
     }
