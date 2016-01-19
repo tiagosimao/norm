@@ -1,8 +1,8 @@
-package org.irenical.norm.query.postgresql;
+package org.irenical.norm.query.postgresql.templates;
 
 import org.irenical.norm.query.NormQueryBuilder;
 
-public interface PGExpression<BUILDER_CLASS extends NormQueryBuilder<BUILDER_CLASS>> extends NormQueryBuilder<BUILDER_CLASS> {
+public interface ExpressionTemplate<BUILDER_CLASS extends NormQueryBuilder<BUILDER_CLASS>> extends NormQueryBuilder<BUILDER_CLASS> {
     
     BUILDER_CLASS not();
     
@@ -31,5 +31,9 @@ public interface PGExpression<BUILDER_CLASS extends NormQueryBuilder<BUILDER_CLA
     BUILDER_CLASS like(Object... that);
 
     BUILDER_CLASS ilike(Object... that);
-
+    
+    BUILDER_CLASS or(Object... that);
+    
+    BUILDER_CLASS and(Object... that);
+    
 }

@@ -1,22 +1,35 @@
-package org.irenical.norm.query.postgresql;
+package org.irenical.norm.query.postgresql.builders;
 
 import java.util.Arrays;
 
 import org.irenical.norm.query.NormBaseQueryBuilder;
+import org.irenical.norm.query.postgresql.templates.SelectTemplate;
 
-public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements PGSelect {
+public class PGSelectBuilder extends NormBaseQueryBuilder<SelectTemplate> implements SelectTemplate {
 
-    protected PGSelectBuilder(String prefix) {
+    public PGSelectBuilder(String prefix) {
         super.literal(prefix);
+    }
+    
+    @Override
+    public SelectTemplate or(Object... that) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
+    public SelectTemplate and(Object... that) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public PGSelect all() {
+    public SelectTemplate all() {
         return literal("all");
     }
 
     @Override
-    public PGSelect as(Object... alias) {
+    public SelectTemplate as(Object... alias) {
         if (alias == null || alias.length == 0) {
             return literal("as");
         } else {
@@ -25,108 +38,108 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect asc() {
+    public SelectTemplate asc() {
         return literal("asc");
     }
 
     @Override
-    public PGSelect desc() {
+    public SelectTemplate desc() {
         return literal("desc");
     }
 
     @Override
-    public PGSelect asterisk() {
+    public SelectTemplate asterisk() {
         return literal("*");
     }
 
     @Override
-    public PGSelect distinct() {
+    public SelectTemplate distinct() {
         return literal("distinct");
     }
 
     @Override
-    public PGSelect distinctOn() {
+    public SelectTemplate distinctOn() {
         return literal("distinct on");
     }
 
     @Override
-    public PGSelect crossJoin() {
+    public SelectTemplate crossJoin() {
         return literal("cross join");
     }
 
     @Override
-    public PGSelect innerJoin() {
+    public SelectTemplate innerJoin() {
         return literal("inner join");
     }
 
     @Override
-    public PGSelect fullJoin() {
+    public SelectTemplate fullJoin() {
         return literal("full outer join");
     }
 
     @Override
-    public PGSelect leftJoin() {
+    public SelectTemplate leftJoin() {
         return literal("left outer join");
     }
 
     @Override
-    public PGSelect rightJoin() {
+    public SelectTemplate rightJoin() {
         return literal("right outer join");
     }
 
     @Override
-    public PGSelect naturalFullJoin() {
+    public SelectTemplate naturalFullJoin() {
         return literal("natural full outer join");
     }
 
     @Override
-    public PGSelect naturalInnerJoin() {
+    public SelectTemplate naturalInnerJoin() {
         return literal("natural inner join");
     }
 
     @Override
-    public PGSelect naturalLeftJoin() {
+    public SelectTemplate naturalLeftJoin() {
         return literal("natural left outer join");
     }
 
     @Override
-    public PGSelect naturalRightJoin() {
+    public SelectTemplate naturalRightJoin() {
         return literal("natural right outer join");
     }
 
     @Override
-    public PGSelect join() {
+    public SelectTemplate join() {
         return literal("natural join");
     }
 
     @Override
-    public PGSelect not() {
+    public SelectTemplate not() {
         return literal("not");
     }
 
     @Override
-    public PGSelect except() {
+    public SelectTemplate except() {
         return literal("except");
     }
 
     @Override
-    public PGSelect from(Object... from) {
+    public SelectTemplate from(Object... from) {
         return literal("from").literals(Arrays.asList(from), " ", null, ",");
 
     }
 
     @Override
-    public PGSelect groupby() {
+    public SelectTemplate groupby() {
         return literal("group by");
     }
 
     @Override
-    public PGSelect having() {
+    public SelectTemplate having() {
         return literal("having");
     }
 
     @Override
-    public PGSelect in(Object... these) {
+    public SelectTemplate in(Object... these) {
         if (these == null || these.length == 0) {
             return literal("in");
         } else {
@@ -135,7 +148,7 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect eq(Object... that) {
+    public SelectTemplate eq(Object... that) {
         if (that != null) {
             if (that.length == 1) {
                 if (that[0] == null) {
@@ -152,7 +165,7 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect notEq(Object... that) {
+    public SelectTemplate notEq(Object... that) {
         if (that != null) {
             if (that.length == 1) {
                 if (that[0] == null) {
@@ -169,7 +182,7 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
         }
     }
 
-    private PGSelect binaryOperation(String op, Object... that) {
+    private SelectTemplate binaryOperation(String op, Object... that) {
         if (that == null || that.length == 0) {
             return super.literal(op);
         } else {
@@ -178,62 +191,62 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect gt(Object... that) {
+    public SelectTemplate gt(Object... that) {
         return binaryOperation(">", that);
     }
 
     @Override
-    public PGSelect lte(Object... that) {
+    public SelectTemplate lte(Object... that) {
         return binaryOperation("<=", that);
     }
 
     @Override
-    public PGSelect lt(Object... that) {
+    public SelectTemplate lt(Object... that) {
         return binaryOperation("<", that);
     }
 
     @Override
-    public PGSelect gte(Object... that) {
+    public SelectTemplate gte(Object... that) {
         return binaryOperation(">=", that);
     }
 
     @Override
-    public PGSelect ilike(Object... that) {
+    public SelectTemplate ilike(Object... that) {
         return binaryOperation("ilike", that);
     }
 
     @Override
-    public PGSelect like(Object... that) {
+    public SelectTemplate like(Object... that) {
         return binaryOperation("like", that);
     }
 
     @Override
-    public PGSelect divide(Object... that) {
+    public SelectTemplate divide(Object... that) {
         return binaryOperation("/", that);
     }
 
     @Override
-    public PGSelect multiply(Object... that) {
+    public SelectTemplate multiply(Object... that) {
         return binaryOperation("*", that);
     }
 
     @Override
-    public PGSelect minus(Object... that) {
+    public SelectTemplate minus(Object... that) {
         return binaryOperation("-", that);
     }
 
     @Override
-    public PGSelect plus(Object... that) {
+    public SelectTemplate plus(Object... that) {
         return binaryOperation("+", that);
     }
 
     @Override
-    public PGSelect intersect() {
+    public SelectTemplate intersect() {
         return literal("intersect");
     }
 
     @Override
-    public PGSelect limit(int... limit) {
+    public SelectTemplate limit(int... limit) {
         if (limit != null && limit.length > 0) {
             return literal("limit ").value(limit[0]);
         }
@@ -241,7 +254,7 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect offset(int... offset) {
+    public SelectTemplate offset(int... offset) {
         if (offset != null && offset.length > 0) {
             return literal("offset ").value(offset[0]);
         }
@@ -249,37 +262,37 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect nullsFirst() {
+    public SelectTemplate nullsFirst() {
         return literal("nulls first");
     }
 
     @Override
-    public PGSelect nullsLast() {
+    public SelectTemplate nullsLast() {
         return literal("nulls last");
     }
 
     @Override
-    public PGSelect orderby() {
+    public SelectTemplate orderby() {
         return literal("order by");
     }
 
     @Override
-    public PGSelect recursive() {
+    public SelectTemplate recursive() {
         return literal("recursive");
     }
 
     @Override
-    public PGSelect union() {
+    public SelectTemplate union() {
         return literal("union");
     }
 
     @Override
-    public PGSelect using() {
+    public SelectTemplate using() {
         return literal("using");
     }
 
     @Override
-    public PGSelect where(Object... that) {
+    public SelectTemplate where(Object... that) {
         if (that == null || that.length == 0) {
             return literal("where");
         } else {
@@ -289,19 +302,24 @@ public class PGSelectBuilder extends NormBaseQueryBuilder<PGSelect> implements P
     }
 
     @Override
-    public PGSelect select() {
+    public SelectTemplate select() {
         return null;
     }
 
     @Override
-    public PGSelect with() {
+    public SelectTemplate with() {
         return null;
     }
 
     @Override
-    public PGSelect literal(Object sql) {
+    public SelectTemplate literal(Object sql) {
         super.literal(" ");
         return super.literal(sql);
+    }
+    
+    @Override
+    public String toString() {
+        return getQuery();
     }
 
 }
