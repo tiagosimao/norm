@@ -127,8 +127,7 @@ public class NormTransaction<INPUT, OUTPUT> {
         if (hook != null) {
             hook.transactionStarted(context);
         }
-        Connection connection = null;
-        connection = connectionSupplier.get();
+        Connection connection = connectionSupplier.get();
         if (connection == null) {
             throw new NormTransactionException("Null connection supplied to this transaction");
         }
@@ -155,11 +154,9 @@ public class NormTransaction<INPUT, OUTPUT> {
             }
             throw e;
         } finally {
-            if (connection != null) {
-                connection.close();
-                if (hook != null) {
-                    hook.transactionEnded(context);
-                }
+            connection.close();
+            if (hook != null) {
+                hook.transactionEnded(context);
             }
         }
         return context.getPreviousOutput();
