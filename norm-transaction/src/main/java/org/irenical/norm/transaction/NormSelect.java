@@ -13,11 +13,11 @@ public class NormSelect<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
         if (queryBuilder == null) {
             throw new NormTransactionException("No query builder was provided for this select operation " + this);
         }
-        String query = queryBuilder.apply(context.getInput());
+        String query = queryBuilder.apply(context);
         if (query == null || query.isEmpty()) {
             throw new NormTransactionException("A null or empty query was provided for this select operation " + this);
         }
-        try (PreparedStatement statement = JDBChops.prepareStatementForSelectOrUpdate(context.getConnection(), query, parametersBuilder == null ? null : parametersBuilder.apply(context.getInput()))) {
+        try (PreparedStatement statement = JDBChops.prepareStatementForSelectOrUpdate(context.getConnection(), query, parametersBuilder == null ? null : parametersBuilder.apply(context))) {
             try (ResultSet resultSet = statement.executeQuery()) {
                 context.setPreparedStatement(statement);
                 context.setResultset(resultSet);
