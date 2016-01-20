@@ -40,7 +40,8 @@ public class NormTransaction<INPUT, OUTPUT> {
         return hook;
     }
     
-    public NormTransaction<INPUT, OUTPUT> appendSelect(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+    public NormTransaction<INPUT, OUTPUT> appendSelect(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder,
+            Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
         NormSelect<INPUT, OUTPUT> select = new NormSelect<>();
         select.setQueryBuilder(queryBuilder);
         select.setParametersBuilder(parametersBuilder);
@@ -53,7 +54,8 @@ public class NormTransaction<INPUT, OUTPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT, OUTPUT> appendInsert(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+    public NormTransaction<INPUT, OUTPUT> appendInsert(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder,
+            Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
         NormInsert<INPUT, OUTPUT> insert = new NormInsert<>();
         insert.setQueryBuilder(queryBuilder);
         insert.setParametersBuilder(parametersBuilder);
@@ -66,7 +68,8 @@ public class NormTransaction<INPUT, OUTPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT, OUTPUT> appendUpdate(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+    public NormTransaction<INPUT, OUTPUT> appendUpdate(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder,
+            Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
         NormUpdate<INPUT, OUTPUT> update = new NormUpdate<>();
         update.setQueryBuilder(queryBuilder);
         update.setParametersBuilder(parametersBuilder);
@@ -79,7 +82,8 @@ public class NormTransaction<INPUT, OUTPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT, OUTPUT> appendDelete(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+    public NormTransaction<INPUT, OUTPUT> appendDelete(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder,
+            Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
         NormDelete<INPUT, OUTPUT> delete = new NormDelete<>();
         delete.setQueryBuilder(queryBuilder);
         delete.setParametersBuilder(parametersBuilder);
@@ -92,7 +96,8 @@ public class NormTransaction<INPUT, OUTPUT> {
         return this;
     }
 
-    public NormTransaction<INPUT, OUTPUT> appendCallable(Function<INPUT, String> queryBuilder, Function<INPUT, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+    public NormTransaction<INPUT, OUTPUT> appendCallable(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder,
+            Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
         NormCall<INPUT, OUTPUT> call = new NormCall<>();
         call.setQueryBuilder(queryBuilder);
         call.setParametersBuilder(parametersBuilder);
@@ -122,8 +127,7 @@ public class NormTransaction<INPUT, OUTPUT> {
         if (hook != null) {
             hook.transactionStarted(context);
         }
-        Connection connection = null;
-        connection = connectionSupplier.get();
+        Connection connection = connectionSupplier.get();
         if (connection == null) {
             throw new NormTransactionException("Null connection supplied to this transaction");
         }
@@ -150,11 +154,9 @@ public class NormTransaction<INPUT, OUTPUT> {
             }
             throw e;
         } finally {
-            if (connection != null) {
-                connection.close();
-                if (hook != null) {
-                    hook.transactionEnded(context);
-                }
+            connection.close();
+            if (hook != null) {
+                hook.transactionEnded(context);
             }
         }
         return context.getPreviousOutput();

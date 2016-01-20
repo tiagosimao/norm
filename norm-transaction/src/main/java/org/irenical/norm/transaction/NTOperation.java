@@ -5,27 +5,27 @@ import java.util.function.Function;
 
 public abstract class NTOperation<INPUT, OUTPUT> {
 
-    protected Function<INPUT, String> queryBuilder;
+    protected Function<NTContext<INPUT, OUTPUT>, String> queryBuilder;
 
-    protected Function<INPUT, Iterable<Object>> parametersBuilder;
+    protected Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder;
 
     protected NTOutputReader<INPUT, OUTPUT> outputReader;
 
     abstract OUTPUT execute(NTContext<INPUT, OUTPUT> context) throws SQLException;
 
-    public void setParametersBuilder(Function<INPUT, Iterable<Object>> parametersBuilder) {
+    public void setParametersBuilder(Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder) {
         this.parametersBuilder = parametersBuilder;
     }
 
-    public void setQueryBuilder(Function<INPUT, String> queryBuilder) {
+    public void setQueryBuilder(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder) {
         this.queryBuilder = queryBuilder;
     }
 
-    public Function<INPUT, Iterable<Object>> getParametersBuilder() {
+    public Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> getParametersBuilder() {
         return parametersBuilder;
     }
 
-    public Function<INPUT, String> getQueryBuilder() {
+    public Function<NTContext<INPUT, OUTPUT>, String> getQueryBuilder() {
         return queryBuilder;
     }
 

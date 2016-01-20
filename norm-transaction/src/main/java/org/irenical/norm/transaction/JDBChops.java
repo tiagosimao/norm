@@ -9,7 +9,9 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-public class JDBChops {
+public final class JDBChops {
+
+    private JDBChops() {}
 
     public static PreparedStatement prepareStatementForInsert(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
