@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Function;
 
@@ -17,9 +18,11 @@ public class TransactionTest {
 
     private static NTConnectionSupplier connectionSupplier = () -> DriverManager.getConnection("jdbc:derby:memory:norm_testing;create=true");
 
-    private Function<NTContext<Object, Object>, Iterable<Object>> innocuousParameterBuilder = context -> null;
+    private static final String INNOCUOUS_SELECT = "values 1";
 
-    private NTOutputReader<Object, Object> resultConsumer = (context) -> {
+    private Function<NTContext<Object, Object>, Iterable<Object>> innocuousParameterBuilder = context -> null;
+    private NTOutputReader<Object, Object> innocuousResultConsumer = context -> null;
+    private NTOutputReader<Object, Object> assertNotNullResultConsumer = (context) -> {
         Assert.assertNotNull(context.getResultset());
         return null;
     };
@@ -49,17 +52,33 @@ public class TransactionTest {
     @Test
     public void testCreateSelect() throws SQLException {
         NormTransaction<Object, Object> transaction = new NormTransaction<>(connectionSupplier);
-        transaction.appendSelect(context -> "values 1", innocuousParameterBuilder, resultConsumer);
+        transaction.appendSelect(context -> INNOCUOUS_SELECT, innocuousParameterBuilder, assertNotNullResultConsumer);
         transaction.execute();
     }
 
     @Test
+    public void testNoParameters() throws SQLException {
+        doInnocuousSUDI(innocuousParameterBuilder, innocuousResultConsumer);
+        doInnocuousSUDI(context -> new ArrayList<>(), innocuousResultConsumer);
+    }
+
+    @Test
+    public void testNullParametersBuilder() throws SQLException {
+        doInnocuousSUDI(null, innocuousResultConsumer);
+    }
+
+    @Test
      public void testNullOutputBuilder() throws SQLException {
+        doInnocuousSUDI(innocuousParameterBuilder, null);
+    }
+
+    private void doInnocuousSUDI(Function<NTContext<Object, Object>, Iterable<Object>> parameterBuilder,
+                                 NTOutputReader<Object, Object> resultConsumer) throws SQLException {
         NormTransaction<Object, Object> transaction = new NormTransaction<>(connectionSupplier);
-        transaction.appendSelect(context -> "values 1", innocuousParameterBuilder, null);
-        transaction.appendUpdate(context -> "update people set name = '42' where false", innocuousParameterBuilder, null);
-        transaction.appendDelete(context -> "delete from people where false", innocuousParameterBuilder, null);
-        transaction.appendInsert(context -> "insert into people(name) (select '42' from people where false)", innocuousParameterBuilder, null);
+        transaction.appendSelect(context -> INNOCUOUS_SELECT, parameterBuilder, resultConsumer);
+        transaction.appendUpdate(context -> "update people set name = '42' where false", parameterBuilder, resultConsumer);
+        transaction.appendDelete(context -> "delete from people where false", parameterBuilder, resultConsumer);
+        transaction.appendInsert(context -> "insert into people(name) (select '42' from people where false)", parameterBuilder, resultConsumer);
         transaction.execute();
     }
 
@@ -129,48 +148,36 @@ public class TransactionTest {
 
     @Test(expected = NormTransactionException.class)
     public void testSelectNoConnectionSupplier() throws SQLException {
-        new NormTransaction<>().appendSelect(context -> "values 1", innocuousParameterBuilder, resultConsumer).execute();
+        new NormTransaction<>().appendSelect(context -> "values 1", innocuousParameterBuilder, assertNotNullResultConsumer).execute();
     }
 
     @Test(expected = NormTransactionException.class)
     public void testSelectNoConnection() throws SQLException {
-        new NormTransaction<>(() -> null).appendSelect(context -> "values 1", innocuousParameterBuilder, resultConsumer).execute();
+        new NormTransaction<>(() -> null).appendSelect(context -> "values 1", innocuousParameterBuilder, assertNotNullResultConsumer).execute();
     }
 
     @Test(expected = NormTransactionException.class)
     public void testSelectNoQueryBuilder() throws SQLException {
         NormTransaction<Object, Object> t = new NormTransaction<>(connectionSupplier);
-        t.appendSelect(null, innocuousParameterBuilder, resultConsumer).execute();
+        t.appendSelect(null, innocuousParameterBuilder, assertNotNullResultConsumer).execute();
     }
 
     @Test(expected = NormTransactionException.class)
     public void testSelectNoQuery() throws SQLException {
         NormTransaction<Object, Object> t = new NormTransaction<>(connectionSupplier);
-        t.appendSelect(context -> null, innocuousParameterBuilder, resultConsumer).execute();
+        t.appendSelect(context -> null, innocuousParameterBuilder, assertNotNullResultConsumer).execute();
     }
 
     @Test()
     public void testSelect() throws SQLException {
         NormTransaction<Object, Object> t = new NormTransaction<>(connectionSupplier);
-        t.appendSelect(context -> "values 1", innocuousParameterBuilder, resultConsumer).execute();
-    }
-
-    @Test()
-    public void testSelectNoParameterBuilder() throws SQLException {
-        NormTransaction<Object, Object> t = new NormTransaction<>(connectionSupplier);
-        t.appendSelect(context -> "values 1", null, resultConsumer).execute();
-    }
-
-    @Test()
-    public void testSelectNoParameters() throws SQLException {
-        NormTransaction<Object, Object> t = new NormTransaction<>(connectionSupplier);
-        t.appendSelect(context -> "values 1", (in) -> null, resultConsumer).execute();
+        t.appendSelect(context -> "values 1", innocuousParameterBuilder, assertNotNullResultConsumer).execute();
     }
 
     @Test(expected = SQLException.class)
     public void testSelectSQLErrorSyntax() throws SQLException {
         NormTransaction<Object, Object> t = new NormTransaction<>(connectionSupplier);
-        t.appendSelect(context -> "select your_mom", innocuousParameterBuilder, resultConsumer).execute();
+        t.appendSelect(context -> "select your_mom", innocuousParameterBuilder, assertNotNullResultConsumer).execute();
     }
 
     @Test(expected = SQLException.class)
