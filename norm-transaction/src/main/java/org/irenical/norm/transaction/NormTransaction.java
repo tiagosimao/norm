@@ -151,7 +151,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     try {
       for (NTOperation<INPUT, OUTPUT> operation : operations) {
 
-        if (operation.condition != null && operation.condition.apply(context)) {
+        if (operation.condition == null || operation.condition.apply(context)) {
 
           context.forward(operation);
 
