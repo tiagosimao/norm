@@ -7,7 +7,7 @@ public class NormInsert<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
 
     @Override
     OUTPUT execute(NTContext<INPUT, OUTPUT> context) throws SQLException {
-        try (PreparedStatement statement = JDBChops.prepareStatementForInsert(context.getConnection(), queryBuilder.apply(context), parametersBuilder.apply(context))) {
+        try (PreparedStatement statement = JDBChops.prepareStatementForInsert(context.getConnection(), queryBuilder.apply(context), parametersBuilder == null ? null : parametersBuilder.apply(context))) {
             int count = statement.executeUpdate();
             context.setPreparedStatement(statement);
             context.setUpdatedRows(count);
