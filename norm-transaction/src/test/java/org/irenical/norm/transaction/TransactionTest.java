@@ -98,7 +98,6 @@ public class TransactionTest {
                     Assert.assertEquals(context.getPreviousOutput(), (Integer) rs.getInt(1));
                     return context.getPreviousOutput();
                 });
-
         t.appendUpdate(context -> "UPDATE PEOPLE SET NAME=? WHERE NAME=?",
                 context -> Arrays.asList("Mr. " + context.getInput(), context.getInput()),
                 context -> {

@@ -10,6 +10,8 @@ public abstract class NTOperation<INPUT, OUTPUT> {
     protected Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder;
 
     protected NTOutputReader<INPUT, OUTPUT> outputReader;
+    
+    protected Function<NTContext<INPUT, OUTPUT>,Boolean> condition;
 
     abstract OUTPUT execute(NTContext<INPUT, OUTPUT> context) throws SQLException;
 
@@ -36,5 +38,13 @@ public abstract class NTOperation<INPUT, OUTPUT> {
     public NTOutputReader<INPUT, OUTPUT> getResultConsumer() {
         return outputReader;
     }
-
+    
+    public void setCondition(Function<NTContext<INPUT, OUTPUT>, Boolean> condition) {
+      this.condition = condition;
+    }
+    
+    public Function<NTContext<INPUT, OUTPUT>, Boolean> getCondition() {
+      return condition;
+    }
+    
 }
