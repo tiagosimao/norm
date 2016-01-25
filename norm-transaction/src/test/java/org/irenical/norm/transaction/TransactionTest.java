@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Function;
 
+import org.irenical.norm.transaction.error.TestSQLException;
 import org.irenical.norm.transaction.error.NormTransactionException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,15 +21,15 @@ public class TransactionTest {
 
     private static final String INNOCUOUS_SELECT = "values 1";
 
-    private Function<NTContext<Object, Object>, Iterable<Object>> innocuousParameterBuilder = context -> null;
+    private Function<NTContext<Object, Object>, Boolean> innocuousCondition = context -> false;
+    private Function<NTContext<Object, Object>, Iterable<Object>> innocuousParameterBuilder = context -> new ArrayList<>();
     private NTOutputReader<Object, Object> innocuousResultConsumer = context -> null;
     private NTOutputReader<Object, Object> assertNotNullResultConsumer = (context) -> {
         Assert.assertNotNull(context.getResultset());
         return null;
     };
-
-    private static final NTOutputReader<Object, Object> resultSQLErrorConsumer = (context) -> {
-        throw new SQLException();
+    private NTOutputReader<Object, Object> failResultConsumer = (context) -> {
+        throw new TestSQLException();
     };
 
     @BeforeClass
@@ -57,28 +58,38 @@ public class TransactionTest {
     }
 
     @Test
+    public void testNullConditionBuilder() throws SQLException {
+        doInnocuousSUDI(null, innocuousParameterBuilder, innocuousResultConsumer);
+    }
+
+    @Test
     public void testNoParameters() throws SQLException {
-        doInnocuousSUDI(innocuousParameterBuilder, innocuousResultConsumer);
-        doInnocuousSUDI(context -> new ArrayList<>(), innocuousResultConsumer);
+        doInnocuousSUDI(innocuousCondition, innocuousParameterBuilder, innocuousResultConsumer);
+        doInnocuousSUDI(innocuousCondition, context -> null, innocuousResultConsumer);
     }
 
     @Test
     public void testNullParametersBuilder() throws SQLException {
-        doInnocuousSUDI(null, innocuousResultConsumer);
+        doInnocuousSUDI(innocuousCondition, null, innocuousResultConsumer);
     }
 
     @Test
      public void testNullOutputBuilder() throws SQLException {
-        doInnocuousSUDI(innocuousParameterBuilder, null);
+        doInnocuousSUDI(innocuousCondition, innocuousParameterBuilder, null);
     }
 
-    private void doInnocuousSUDI(Function<NTContext<Object, Object>, Iterable<Object>> parameterBuilder,
-                                 NTOutputReader<Object, Object> resultConsumer) throws SQLException {
+    @Test
+    public void testFalseCondition() throws SQLException {
+        doInnocuousSUDI(context -> false, innocuousParameterBuilder, failResultConsumer);
+    }
+
+    private void doInnocuousSUDI(Function<NTContext<Object, Object>, Boolean> condition, Function<NTContext<Object, Object>,
+            Iterable<Object>> parameterBuilder, NTOutputReader<Object, Object> resultConsumer) throws SQLException {
         NormTransaction<Object, Object> transaction = new NormTransaction<>(connectionSupplier);
-        transaction.appendSelect(context -> INNOCUOUS_SELECT, parameterBuilder, resultConsumer);
-        transaction.appendUpdate(context -> "update people set name = '42' where false", parameterBuilder, resultConsumer);
-        transaction.appendDelete(context -> "delete from people where false", parameterBuilder, resultConsumer);
-        transaction.appendInsert(context -> "insert into people(name) (select '42' from people where false)", parameterBuilder, resultConsumer);
+        transaction.appendSelect(condition, context -> INNOCUOUS_SELECT, parameterBuilder, resultConsumer);
+        transaction.appendUpdate(condition, context -> "update people set name = '42' where false", parameterBuilder, resultConsumer);
+        transaction.appendDelete(condition, context -> "delete from people where false", parameterBuilder, resultConsumer);
+        transaction.appendInsert(condition, context -> "insert into people(name) (select '42' from people where false)", parameterBuilder, resultConsumer);
         transaction.execute();
     }
 
@@ -140,6 +151,12 @@ public class TransactionTest {
     }
 
     @Test
+    public void testConditionalCreateInsertUpdateDelete() {
+        NormTransaction<String, Integer> t = new NormTransaction<>(connectionSupplier);
+
+    }
+
+    @Test
     public void testCreateCallable() {
         // TODO test procedure with IN parameters, OUT parameters, INOUT
         // parameters and an unhealthy mix of them all
@@ -179,10 +196,10 @@ public class TransactionTest {
         t.appendSelect(context -> "select your_mom", innocuousParameterBuilder, assertNotNullResultConsumer).execute();
     }
 
-    @Test(expected = SQLException.class)
+    @Test(expected = TestSQLException.class)
     public void testSelectSQLErrorOnRead() throws SQLException {
         NormTransaction<Object, Object> t = new NormTransaction<>(connectionSupplier);
-        t.appendSelect(context -> "values 1", innocuousParameterBuilder, resultSQLErrorConsumer).execute();
+        t.appendSelect(context -> "values 1", innocuousParameterBuilder, failResultConsumer).execute();
     }
 
 }

@@ -67,6 +67,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     insert.setQueryBuilder(queryBuilder);
     insert.setParametersBuilder(parametersBuilder);
     insert.setResultConsumer(resultConsumer);
+    insert.setCondition(condition);
     return appendInsert(insert);
   }
 
@@ -84,6 +85,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     update.setQueryBuilder(queryBuilder);
     update.setParametersBuilder(parametersBuilder);
     update.setResultConsumer(resultConsumer);
+    update.setCondition(condition);
     return appendUpdate(update);
   }
 
@@ -101,6 +103,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     delete.setQueryBuilder(queryBuilder);
     delete.setParametersBuilder(parametersBuilder);
     delete.setResultConsumer(resultConsumer);
+    delete.setCondition(condition);
     return appendDelete(delete);
   }
 
@@ -118,6 +121,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     call.setQueryBuilder(queryBuilder);
     call.setParametersBuilder(parametersBuilder);
     call.setResultConsumer(resultConsumer);
+    call.setCondition(condition);
     return appendCallable(call);
   }
 
