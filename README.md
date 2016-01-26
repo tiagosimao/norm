@@ -1,5 +1,5 @@
 # NORM
-<b>Not an O.R.M.</b>
+<b>Not an O.R.M.</b>  
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.irenical.norm/norm-transaction/badge.svg?style=flat)](http://mvnrepository.com/artifact/org.irenical.norm/norm-transaction)
 
 
