@@ -5,7 +5,7 @@ Easy to use, lightweight java framework, built on top of JDBC that allows you to
 
 <b>Things you can do with NORM</b>  
 - Preventing resource leaks caused by developer error, such as unclosed connections, result sets or statements  
-- Easily building SQL queries, without sacrificing ability to do weird stuff  
+- Easily building SQL queries, without sacrificing the ability to do weird stuff  
 - ResultSet to Java objects mapping  
 - Truly modular framework, allowing the developer to pick and choose what features of NORM to use, even in a multiple framework context  
 
