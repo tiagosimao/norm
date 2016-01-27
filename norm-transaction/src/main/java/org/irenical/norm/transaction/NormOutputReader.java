@@ -5,6 +5,6 @@ import java.sql.SQLException;
 @FunctionalInterface
 public interface NormOutputReader<INPUT, OUTPUT> {
 
-    OUTPUT toOutput(NormContext<INPUT, OUTPUT> context) throws SQLException;
+  OUTPUT toOutput(NormContext<INPUT, OUTPUT> context) throws SQLException;
 
 }

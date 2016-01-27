@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 @FunctionalInterface
 public interface NormConnectionSupplier {
-    
-    Connection get() throws SQLException;
+
+  Connection get() throws SQLException;
 
 }

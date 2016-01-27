@@ -18,7 +18,6 @@ public class NormTransaction<INPUT, OUTPUT> {
   private NormConnectionSupplier connectionSupplier;
 
   public NormTransaction() {
-    this(null);
   }
 
   public NormTransaction(NormConnectionSupplier connectionSupplier) {
