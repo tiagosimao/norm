@@ -35,9 +35,15 @@ Easy to use, lightweight java framework, built on top of JDBC that allows you to
 - Simple generic query builder
 - Sub-modules for different JDBC drivers to further help in query building
 
+(incomplete)
+
 <h3>Norm Graph</h3> (optional)
 - Maps JDBC ResultSet to object graph
+
+(todo)
 
 <h3>NORM</h3> (very optional)
 - Glues the other modules together to simplify the usage
 - Less suited for a multiple framework context
+
+(todo)
