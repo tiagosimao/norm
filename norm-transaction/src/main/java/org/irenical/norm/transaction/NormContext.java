@@ -12,11 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class NTContext<INPUT, OUTPUT> {
+public class NormContext<INPUT, OUTPUT> {
 
     private final NormTransaction<INPUT, OUTPUT> transaction;
 
-    private NTOperation<INPUT, OUTPUT> operation;
+    private NormOperation<INPUT, OUTPUT> operation;
 
     private Connection connection;
 
@@ -34,7 +34,7 @@ public class NTContext<INPUT, OUTPUT> {
 
     private List<Map<String, Object>> generatedKeys;
 
-    public NTContext(NormTransaction<INPUT, OUTPUT> nt) {
+    public NormContext(NormTransaction<INPUT, OUTPUT> nt) {
         this.transaction = nt;
     }
 
@@ -50,7 +50,7 @@ public class NTContext<INPUT, OUTPUT> {
         return transaction;
     }
 
-    public void forward(NTOperation<INPUT, OUTPUT> nextOperation) {
+    public void forward(NormOperation<INPUT, OUTPUT> nextOperation) {
         setCallableStatement(null);
         setPreparedStatement(null);
         setResultset(null);
@@ -59,7 +59,7 @@ public class NTContext<INPUT, OUTPUT> {
         this.operation = nextOperation;
     }
 
-    public NTOperation<INPUT, OUTPUT> getOperation() {
+    public NormOperation<INPUT, OUTPUT> getOperation() {
         return operation;
     }
 

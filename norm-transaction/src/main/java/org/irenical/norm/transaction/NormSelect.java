@@ -6,10 +6,10 @@ import java.sql.SQLException;
 
 import org.irenical.norm.transaction.error.NormTransactionException;
 
-public class NormSelect<INPUT, OUTPUT> extends NTOperation<INPUT, OUTPUT> {
+public class NormSelect<INPUT, OUTPUT> extends NormOperation<INPUT, OUTPUT> {
 
     @Override
-    OUTPUT execute(NTContext<INPUT, OUTPUT> context) throws SQLException {
+    OUTPUT execute(NormContext<INPUT, OUTPUT> context) throws SQLException {
         if (queryBuilder == null) {
             throw new NormTransactionException("No query builder was provided for this select operation " + this);
         }

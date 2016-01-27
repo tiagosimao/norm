@@ -11,123 +11,123 @@ import org.irenical.norm.transaction.error.NormTransactionException;
 
 public class NormTransaction<INPUT, OUTPUT> {
 
-  private final List<NTOperation<INPUT, OUTPUT>> operations = new CopyOnWriteArrayList<>();
+  private final List<NormOperation<INPUT, OUTPUT>> operations = new CopyOnWriteArrayList<>();
 
-  private NTHook hook;
+  private NormHook hook;
 
-  private NTConnectionSupplier connectionSupplier;
+  private NormConnectionSupplier connectionSupplier;
 
   public NormTransaction() {
     this(null);
   }
 
-  public NormTransaction(NTConnectionSupplier connectionSupplier) {
+  public NormTransaction(NormConnectionSupplier connectionSupplier) {
     this.connectionSupplier = connectionSupplier;
   }
 
-  public void setConnectionSupplier(NTConnectionSupplier connectionSupplier) {
+  public void setConnectionSupplier(NormConnectionSupplier connectionSupplier) {
     this.connectionSupplier = connectionSupplier;
   }
 
-  public NTConnectionSupplier getConnectionSupplier() {
+  public NormConnectionSupplier getConnectionSupplier() {
     return connectionSupplier;
   }
 
-  public void setHook(NTHook hook) {
+  public void setHook(NormHook hook) {
     this.hook = hook;
   }
 
-  public NTHook getHook() {
+  public NormHook getHook() {
     return hook;
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendSelect(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
-    return appendSelect(null, queryBuilder, parametersBuilder, resultConsumer);
+  public NormTransaction<INPUT, OUTPUT> appendSelect(Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
+    return appendSelect(null, queryBuilder, parametersBuilder, outputReader);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendSelect(Function<NTContext<INPUT, OUTPUT>, Boolean> condition, Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+  public NormTransaction<INPUT, OUTPUT> appendSelect(Function<NormContext<INPUT, OUTPUT>, Boolean> condition, Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
     NormSelect<INPUT, OUTPUT> select = new NormSelect<>();
     select.setQueryBuilder(queryBuilder);
     select.setParametersBuilder(parametersBuilder);
-    select.setResultConsumer(resultConsumer);
+    select.setOutputReader(outputReader);
     select.setCondition(condition);
     return appendSelect(select);
   }
 
   public NormTransaction<INPUT, OUTPUT> appendSelect(NormSelect<INPUT, OUTPUT> select) {
-    operations.add(select);
-    return this;
+    return appendOperation(select);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendInsert(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
-    return appendInsert(null, queryBuilder, parametersBuilder, resultConsumer);
+  public NormTransaction<INPUT, OUTPUT> appendInsert(Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
+    return appendInsert(null, queryBuilder, parametersBuilder, outputReader);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendInsert(Function<NTContext<INPUT, OUTPUT>, Boolean> condition, Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+  public NormTransaction<INPUT, OUTPUT> appendInsert(Function<NormContext<INPUT, OUTPUT>, Boolean> condition, Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
     NormInsert<INPUT, OUTPUT> insert = new NormInsert<>();
     insert.setQueryBuilder(queryBuilder);
     insert.setParametersBuilder(parametersBuilder);
-    insert.setResultConsumer(resultConsumer);
+    insert.setOutputReader(outputReader);
     insert.setCondition(condition);
     return appendInsert(insert);
   }
 
   public NormTransaction<INPUT, OUTPUT> appendInsert(NormInsert<INPUT, OUTPUT> insert) {
-    operations.add(insert);
-    return this;
+    return appendOperation(insert);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendUpdate(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
-    return appendUpdate(null, queryBuilder, parametersBuilder, resultConsumer);
+  public NormTransaction<INPUT, OUTPUT> appendUpdate(Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
+    return appendUpdate(null, queryBuilder, parametersBuilder, outputReader);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendUpdate(Function<NTContext<INPUT, OUTPUT>, Boolean> condition, Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+  public NormTransaction<INPUT, OUTPUT> appendUpdate(Function<NormContext<INPUT, OUTPUT>, Boolean> condition, Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
     NormUpdate<INPUT, OUTPUT> update = new NormUpdate<>();
     update.setQueryBuilder(queryBuilder);
     update.setParametersBuilder(parametersBuilder);
-    update.setResultConsumer(resultConsumer);
+    update.setOutputReader(outputReader);
     update.setCondition(condition);
     return appendUpdate(update);
   }
 
   public NormTransaction<INPUT, OUTPUT> appendUpdate(NormUpdate<INPUT, OUTPUT> update) {
-    operations.add(update);
-    return this;
+    return appendOperation(update);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendDelete(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
-    return appendDelete(null, queryBuilder, parametersBuilder, resultConsumer);
+  public NormTransaction<INPUT, OUTPUT> appendDelete(Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
+    return appendDelete(null, queryBuilder, parametersBuilder, outputReader);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendDelete(Function<NTContext<INPUT, OUTPUT>, Boolean> condition, Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+  public NormTransaction<INPUT, OUTPUT> appendDelete(Function<NormContext<INPUT, OUTPUT>, Boolean> condition, Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
     NormDelete<INPUT, OUTPUT> delete = new NormDelete<>();
     delete.setQueryBuilder(queryBuilder);
     delete.setParametersBuilder(parametersBuilder);
-    delete.setResultConsumer(resultConsumer);
+    delete.setOutputReader(outputReader);
     delete.setCondition(condition);
     return appendDelete(delete);
   }
 
   public NormTransaction<INPUT, OUTPUT> appendDelete(NormUpdate<INPUT, OUTPUT> delete) {
-    operations.add(delete);
-    return this;
+    return appendOperation(delete);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendCallable(Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
-    return appendCallable(null, queryBuilder, parametersBuilder, resultConsumer);
+  public NormTransaction<INPUT, OUTPUT> appendCallable(Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
+    return appendCallable(null, queryBuilder, parametersBuilder, outputReader);
   }
 
-  public NormTransaction<INPUT, OUTPUT> appendCallable(Function<NTContext<INPUT, OUTPUT>, Boolean> condition, Function<NTContext<INPUT, OUTPUT>, String> queryBuilder, Function<NTContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NTOutputReader<INPUT, OUTPUT> resultConsumer) {
+  public NormTransaction<INPUT, OUTPUT> appendCallable(Function<NormContext<INPUT, OUTPUT>, Boolean> condition, Function<NormContext<INPUT, OUTPUT>, String> queryBuilder, Function<NormContext<INPUT, OUTPUT>, Iterable<Object>> parametersBuilder, NormOutputReader<INPUT, OUTPUT> outputReader) {
     NormCall<INPUT, OUTPUT> call = new NormCall<>();
     call.setQueryBuilder(queryBuilder);
     call.setParametersBuilder(parametersBuilder);
-    call.setResultConsumer(resultConsumer);
+    call.setOutputReader(outputReader);
     call.setCondition(condition);
     return appendCallable(call);
   }
 
   public NormTransaction<INPUT, OUTPUT> appendCallable(NormCall<INPUT, OUTPUT> call) {
-    operations.add(call);
+    return appendOperation(call);
+  }
+
+  public NormTransaction<INPUT, OUTPUT> appendOperation(NormOperation<INPUT, OUTPUT> operation) {
+    operations.add(operation);
     return this;
   }
 
@@ -139,11 +139,11 @@ public class NormTransaction<INPUT, OUTPUT> {
     return execute(connectionSupplier, input);
   }
 
-  public OUTPUT execute(NTConnectionSupplier connectionSupplier, INPUT input) throws SQLException {
+  public OUTPUT execute(NormConnectionSupplier connectionSupplier, INPUT input) throws SQLException {
     if (connectionSupplier == null) {
       throw new NormTransactionException("No connection supplier was provided for this transaction");
     }
-    NTContext<INPUT, OUTPUT> context = new NTContext<>(this);
+    NormContext<INPUT, OUTPUT> context = new NormContext<>(this);
     context.setInput(input);
     if (hook != null) {
       hook.transactionStarted(context);
@@ -154,7 +154,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     }
     context.setConnection(connection);
     try {
-      for (NTOperation<INPUT, OUTPUT> operation : new LinkedList<>(operations)) {
+      for (NormOperation<INPUT, OUTPUT> operation : new LinkedList<>(operations)) {
 
         if (operation.condition == null || operation.condition.apply(context)) {
 

@@ -18,18 +18,18 @@ import org.junit.Test;
 
 public class TransactionTest {
 
-    private static NTConnectionSupplier connectionSupplier = () -> DriverManager.getConnection("jdbc:derby:memory:norm_testing;create=true");
+    private static NormConnectionSupplier connectionSupplier = () -> DriverManager.getConnection("jdbc:derby:memory:norm_testing;create=true");
 
     private static final String INNOCUOUS_SELECT = "values 1";
 
-    private Function<NTContext<Object, Object>, Boolean> innocuousCondition = context -> false;
-    private Function<NTContext<Object, Object>, Iterable<Object>> innocuousParameterBuilder = context -> new ArrayList<>();
-    private NTOutputReader<Object, Object> innocuousResultConsumer = context -> null;
-    private NTOutputReader<Object, Object> assertNotNullResultConsumer = (context) -> {
+    private Function<NormContext<Object, Object>, Boolean> innocuousCondition = context -> false;
+    private Function<NormContext<Object, Object>, Iterable<Object>> innocuousParameterBuilder = context -> new ArrayList<>();
+    private NormOutputReader<Object, Object> innocuousResultConsumer = context -> null;
+    private NormOutputReader<Object, Object> assertNotNullResultConsumer = (context) -> {
         Assert.assertNotNull(context.getResultset());
         return null;
     };
-    private NTOutputReader<Object, Object> failResultConsumer = (context) -> {
+    private NormOutputReader<Object, Object> failResultConsumer = (context) -> {
         throw new TestSQLException();
     };
 
@@ -84,8 +84,8 @@ public class TransactionTest {
         doInnocuousSUDI(context -> false, innocuousParameterBuilder, failResultConsumer);
     }
 
-    private void doInnocuousSUDI(Function<NTContext<Object, Object>, Boolean> condition, Function<NTContext<Object, Object>,
-            Iterable<Object>> parameterBuilder, NTOutputReader<Object, Object> resultConsumer) throws SQLException {
+    private void doInnocuousSUDI(Function<NormContext<Object, Object>, Boolean> condition, Function<NormContext<Object, Object>,
+            Iterable<Object>> parameterBuilder, NormOutputReader<Object, Object> resultConsumer) throws SQLException {
         NormTransaction<Object, Object> transaction = new NormTransaction<>(connectionSupplier);
         transaction.appendSelect(condition, context -> INNOCUOUS_SELECT, parameterBuilder, resultConsumer);
         transaction.appendUpdate(condition, context -> "update people set name = '42' where false", parameterBuilder, resultConsumer);
@@ -100,7 +100,7 @@ public class TransactionTest {
 
         t.appendInsert(context -> "INSERT INTO PEOPLE (NAME) VALUES (?)",
                 context -> Arrays.asList(context.getInput()),
-                NTContext::getFirstGeneratedKeyAsInteger);
+                NormContext::getFirstGeneratedKeyAsInteger);
         t.appendSelect(context -> "SELECT PERSON_ID FROM PEOPLE WHERE NAME=?",
                 context -> Arrays.asList(context.getInput()),
                 context -> {
