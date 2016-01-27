@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 import org.irenical.norm.transaction.error.NormTransactionException;
 
 public class NormTransaction<INPUT, OUTPUT> {
 
-  private final List<NTOperation<INPUT, OUTPUT>> operations = new LinkedList<>();
+  private final List<NTOperation<INPUT, OUTPUT>> operations = new CopyOnWriteArrayList<>();
 
   private NTHook hook;
 
@@ -153,7 +154,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     }
     context.setConnection(connection);
     try {
-      for (NTOperation<INPUT, OUTPUT> operation : operations) {
+      for (NTOperation<INPUT, OUTPUT> operation : new LinkedList<>(operations)) {
 
         if (operation.condition == null || operation.condition.apply(context)) {
 

@@ -1,3 +1,4 @@
+
 package org.irenical.norm.transaction;
 
 import java.sql.Connection;
@@ -100,7 +101,6 @@ public class TransactionTest {
         t.appendInsert(context -> "INSERT INTO PEOPLE (NAME) VALUES (?)",
                 context -> Arrays.asList(context.getInput()),
                 NTContext::getFirstGeneratedKeyAsInteger);
-
         t.appendSelect(context -> "SELECT PERSON_ID FROM PEOPLE WHERE NAME=?",
                 context -> Arrays.asList(context.getInput()),
                 context -> {
