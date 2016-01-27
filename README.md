@@ -29,7 +29,7 @@ Easy to use, lightweight java framework, built on top of JDBC that allows you to
   <version>0.3.2</version>
 </dependency>
 ```
-    
+[More about norm-transaction](https://github.com/tiagosimao/norm/wiki/Norm-Transaction)  
 
 <h3>Norm Query</h3> (optional)
 - Simple generic query builder
