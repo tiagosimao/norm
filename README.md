@@ -1,11 +1,13 @@
 # NORM
-<b>Not an O.R.M.</b>
+<b>Not an O.R.M.</b>  
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.irenical.norm/norm/badge.svg?style=flat)](http://mvnrepository.com/artifact/org.irenical.norm/norm)
+
 
 Easy to use, lightweight java framework, built on top of JDBC that allows you to build high performance DB access for your Java applications, without the typical productivity and reliability penalties of not using an ORM.
 
 <b>Things you can do with NORM</b>  
 - Preventing resource leaks caused by developer error, such as unclosed connections, result sets or statements  
-- Easily building SQL queries, without sacrificing ability to do weird stuff  
+- Easily building SQL queries, without sacrificing the ability to do weird stuff  
 - ResultSet to Java objects mapping  
 - Truly modular framework, allowing the developer to pick and choose what features of NORM to use, even in a multiple framework context  
 
@@ -24,10 +26,10 @@ Easy to use, lightweight java framework, built on top of JDBC that allows you to
 <dependency>
   <groupId>org.irenical.norm</groupId>
   <artifactId>norm-transaction</artifactId>
-  <version>0.1</version>
+  <version>0.3.2</version>
 </dependency>
 ```
-    
+[More about norm-transaction](https://github.com/tiagosimao/norm/wiki/Norm-Transaction)  
 
 <h3>Norm Query</h3> (optional)
 - Simple generic query builder
