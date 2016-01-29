@@ -26,7 +26,7 @@ Easy to use, lightweight java framework, built on top of JDBC that allows you to
 <dependency>
   <groupId>org.irenical.norm</groupId>
   <artifactId>norm-transaction</artifactId>
-  <version>0.3.2</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 [More about norm-transaction](https://github.com/tiagosimao/norm/wiki/Norm-Transaction)  
