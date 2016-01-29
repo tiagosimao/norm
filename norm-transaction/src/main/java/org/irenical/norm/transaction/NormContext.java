@@ -11,12 +11,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class NormContext<INPUT, OUTPUT> {
 
-  private final NormTransaction<INPUT, OUTPUT> transaction;
-
-  private NormOperation<INPUT, OUTPUT> operation;
+  private NormTransaction<INPUT, OUTPUT> transaction;
 
   private Connection connection;
 
@@ -34,11 +33,16 @@ public class NormContext<INPUT, OUTPUT> {
 
   private List<Map<String, Object>> generatedKeys;
 
-  public NormContext(NormTransaction<INPUT, OUTPUT> nt) {
-    this.transaction = nt;
+  private Function<INPUT, ?> inputAdapter;
+  
+  protected NormContext() {
   }
-
-  public void setConnection(Connection connection) {
+  
+  protected void setTransaction(NormTransaction<INPUT, OUTPUT> transaction) {
+    this.transaction = transaction;
+  }
+  
+  protected void setConnection(Connection connection) {
     this.connection = connection;
   }
 
@@ -50,44 +54,42 @@ public class NormContext<INPUT, OUTPUT> {
     return transaction;
   }
 
-  public void forward(NormOperation<INPUT, OUTPUT> nextOperation) {
+  protected void forward() {
     setCallableStatement(null);
     setPreparedStatement(null);
     setResultset(null);
     setUpdatedRows(null);
     generatedKeys = null;
-    this.operation = nextOperation;
   }
 
-  public NormOperation<INPUT, OUTPUT> getOperation() {
-    return operation;
-  }
-
-  public void setPreviousOutput(OUTPUT output) {
+  protected void setCurrentOutput(OUTPUT output) {
     this.output = output;
   }
 
-  public OUTPUT getPreviousOutput() {
+  public OUTPUT getCurrentOutput() {
     return output;
   }
 
-  public void setInput(INPUT input) {
+  protected void setInput(INPUT input) {
     this.input = input;
   }
 
   public INPUT getInput() {
+    if(inputAdapter!=null){
+      return (INPUT) inputAdapter.apply(input);
+    }
     return input;
   }
 
-  public void setCallableStatement(CallableStatement callableStatement) {
+  protected void setCallableStatement(CallableStatement callableStatement) {
     this.callableStatement = callableStatement;
   }
 
-  public void setPreparedStatement(PreparedStatement preparedStatement) {
+  protected void setPreparedStatement(PreparedStatement preparedStatement) {
     this.preparedStatement = preparedStatement;
   }
 
-  public void setResultset(ResultSet resultset) {
+  protected void setResultset(ResultSet resultset) {
     this.resultset = resultset;
   }
 
@@ -103,7 +105,7 @@ public class NormContext<INPUT, OUTPUT> {
     return resultset;
   }
 
-  public void setUpdatedRows(Integer updatedRows) {
+  protected void setUpdatedRows(Integer updatedRows) {
     this.updatedRows = updatedRows;
   }
 
@@ -152,6 +154,10 @@ public class NormContext<INPUT, OUTPUT> {
       }
       this.generatedKeys = Collections.unmodifiableList(generatedKeys);
     }
+  }
+
+  public void setInputAdapter(Function<INPUT, ?> inputAdapter) {
+    this.inputAdapter = inputAdapter;
   }
 
 }

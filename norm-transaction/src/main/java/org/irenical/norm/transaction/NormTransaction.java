@@ -1,5 +1,6 @@
 package org.irenical.norm.transaction;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -11,7 +12,7 @@ import org.irenical.norm.transaction.error.NormTransactionException;
 
 public class NormTransaction<INPUT, OUTPUT> {
 
-  private final List<NormOperation<INPUT, OUTPUT>> operations = new CopyOnWriteArrayList<>();
+  private final List<OperationAdapter<INPUT, OUTPUT, ?, ?>> adapters = new CopyOnWriteArrayList<>();
 
   private NormHook hook;
 
@@ -126,7 +127,14 @@ public class NormTransaction<INPUT, OUTPUT> {
   }
 
   public NormTransaction<INPUT, OUTPUT> appendOperation(NormOperation<INPUT, OUTPUT> operation) {
-    operations.add(operation);
+    return appendOperation(operation,null,null);
+  }
+
+  public <OPERATION_INPUT, OPERATION_OUTPUT> NormTransaction<INPUT, OUTPUT> appendOperation(NormOperation<OPERATION_INPUT, OPERATION_OUTPUT> operation, Function<INPUT, OPERATION_INPUT> inputAdapter, Function<OUTPUT, OPERATION_OUTPUT> outputAdapter) {
+    OperationAdapter<INPUT,OUTPUT,OPERATION_INPUT,OPERATION_OUTPUT> adapter = new OperationAdapter<>(operation);
+    adapter.setInputAdapter(inputAdapter);
+    adapter.setOutputAdapter(outputAdapter);
+    adapters.add(adapter);
     return this;
   }
 
@@ -142,7 +150,8 @@ public class NormTransaction<INPUT, OUTPUT> {
     if (connectionSupplier == null) {
       throw new NormTransactionException("No connection supplier was provided for this transaction");
     }
-    NormContext<INPUT, OUTPUT> context = new NormContext<>(this);
+    NormContext<INPUT, OUTPUT> context = new NormContext<>();
+    context.setTransaction(this);
     context.setInput(input);
     if (hook != null) {
       hook.transactionStarted(context);
@@ -153,16 +162,22 @@ public class NormTransaction<INPUT, OUTPUT> {
     }
     context.setConnection(connection);
     try {
-      for (NormOperation<INPUT, OUTPUT> operation : new LinkedList<>(operations)) {
-
-        if (operation.condition == null || operation.condition.apply(context)) {
-
-          context.forward(operation);
-
+      for (OperationAdapter<INPUT, OUTPUT, ?, ?> adapter : new LinkedList<>(adapters)) {
+        // clear state
+        context.forward();
+        
+        NormOperation operation = adapter.getOperation();
+        context.setInputAdapter(adapter.getInputAdapter());
+        if (operation.condition == null || ((Function<NormContext,Boolean>)operation.condition).apply(context)) {
           if (hook != null) {
             hook.operationStarted(context);
           }
-          context.setPreviousOutput(operation.execute(context));
+          Object got = operation.execute(context);
+          if(adapter.getOutputAdapter()!=null){
+            got = adapter.getOutputAdapter().apply((OUTPUT) got);
+          }
+          context.setCurrentOutput((OUTPUT)got);
+          
           if (hook != null) {
             hook.operationEnded(context);
           }
@@ -182,7 +197,7 @@ public class NormTransaction<INPUT, OUTPUT> {
         hook.transactionEnded(context);
       }
     }
-    return context.getPreviousOutput();
+    return context.getCurrentOutput();
   }
 
 }
