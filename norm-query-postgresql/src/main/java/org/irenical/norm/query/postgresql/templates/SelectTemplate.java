@@ -1,7 +1,7 @@
 package org.irenical.norm.query.postgresql.templates;
 
 
-public interface SelectTemplate extends ExpressionTemplate<SelectTemplate> {
+public interface SelectTemplate extends BaseTemplate<SelectTemplate> {
 
     SelectTemplate with();
 

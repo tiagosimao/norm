@@ -5,9 +5,9 @@ import java.util.Arrays;
 import org.irenical.norm.query.NormBaseQueryBuilder;
 import org.irenical.norm.query.postgresql.templates.SelectTemplate;
 
-public class PGSelectBuilder extends NormBaseQueryBuilder<SelectTemplate> implements SelectTemplate {
+public class SelectBuilder extends NormBaseQueryBuilder<SelectTemplate> implements SelectTemplate {
 
-  public PGSelectBuilder(String prefix) {
+  public SelectBuilder(String prefix) {
     super.literal(prefix);
   }
 

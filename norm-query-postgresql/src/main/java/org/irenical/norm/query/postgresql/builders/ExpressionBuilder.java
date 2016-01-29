@@ -3,17 +3,17 @@ package org.irenical.norm.query.postgresql.builders;
 import java.util.Arrays;
 
 import org.irenical.norm.query.NormBaseQueryBuilder;
-import org.irenical.norm.query.postgresql.PGExpression;
+import org.irenical.norm.query.postgresql.templates.ExpressionTemplate;
 
-public class PGExpressionBuilder extends NormBaseQueryBuilder<PGExpression> implements PGExpression {
+public class ExpressionBuilder extends NormBaseQueryBuilder<ExpressionTemplate> implements ExpressionTemplate {
 
   @Override
-  public PGExpression not() {
+  public ExpressionTemplate not() {
     return literal(" not");
   }
 
   @Override
-  public PGExpression in(Object... that) {
+  public ExpressionTemplate in(Object... that) {
     if (that == null || that.length == 0) {
       return literal(" in");
     } else {
@@ -22,7 +22,7 @@ public class PGExpressionBuilder extends NormBaseQueryBuilder<PGExpression> impl
   }
 
   @Override
-  public PGExpression eq(Object... that) {
+  public ExpressionTemplate eq(Object... that) {
     if (that != null) {
       if (that.length == 1) {
         if (that[0] == null) {
@@ -39,7 +39,7 @@ public class PGExpressionBuilder extends NormBaseQueryBuilder<PGExpression> impl
   }
 
   @Override
-  public PGExpression notEq(Object... that) {
+  public ExpressionTemplate notEq(Object... that) {
     if (that != null) {
       if (that.length == 1) {
         if (that[0] == null) {
@@ -56,7 +56,7 @@ public class PGExpressionBuilder extends NormBaseQueryBuilder<PGExpression> impl
     }
   }
 
-  private PGExpression binaryOperation(String op, Object... that) {
+  private ExpressionTemplate binaryOperation(String op, Object... that) {
     if (that == null || that.length == 0) {
       return literal(op);
     } else {
@@ -65,57 +65,57 @@ public class PGExpressionBuilder extends NormBaseQueryBuilder<PGExpression> impl
   }
 
   @Override
-  public PGExpression gt(Object... that) {
+  public ExpressionTemplate gt(Object... that) {
     return binaryOperation(">", that);
   }
 
   @Override
-  public PGExpression lte(Object... that) {
+  public ExpressionTemplate lte(Object... that) {
     return binaryOperation("<=", that);
   }
 
   @Override
-  public PGExpression lt(Object... that) {
+  public ExpressionTemplate lt(Object... that) {
     return binaryOperation("<", that);
   }
 
   @Override
-  public PGExpression gte(Object... that) {
+  public ExpressionTemplate gte(Object... that) {
     return binaryOperation(">=", that);
   }
 
   @Override
-  public PGExpression ilike(Object... that) {
+  public ExpressionTemplate ilike(Object... that) {
     return binaryOperation(" ilike ", that);
   }
 
   @Override
-  public PGExpression like(Object... that) {
+  public ExpressionTemplate like(Object... that) {
     return binaryOperation(" like ", that);
   }
 
   @Override
-  public PGExpression divide(Object... that) {
+  public ExpressionTemplate divide(Object... that) {
     return binaryOperation("/", that);
   }
 
   @Override
-  public PGExpression multiply(Object... that) {
+  public ExpressionTemplate multiply(Object... that) {
     return binaryOperation("*", that);
   }
 
   @Override
-  public PGExpression minus(Object... that) {
+  public ExpressionTemplate minus(Object... that) {
     return binaryOperation("-", that);
   }
 
   @Override
-  public PGExpression plus(Object... that) {
+  public ExpressionTemplate plus(Object... that) {
     return binaryOperation("+", that);
   }
 
   @Override
-  public PGExpression or(Object... that) {
+  public ExpressionTemplate or(Object... that) {
     for (Object object : that) {
       literal(" or ");
       literal(object);
@@ -124,7 +124,7 @@ public class PGExpressionBuilder extends NormBaseQueryBuilder<PGExpression> impl
   }
 
   @Override
-  public PGExpression and(Object... that) {
+  public ExpressionTemplate and(Object... that) {
     for (Object object : that) {
       literal(" and ");
       literal(object);
