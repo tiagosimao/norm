@@ -74,6 +74,7 @@ public class NormContext<INPUT, OUTPUT> {
     this.input = input;
   }
 
+  @SuppressWarnings("unchecked")
   public INPUT getInput() {
     if(inputAdapter!=null){
       return (INPUT) inputAdapter.apply(input);

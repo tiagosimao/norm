@@ -1,6 +1,5 @@
 package org.irenical.norm.transaction;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -51,10 +50,6 @@ public class NormTransaction<INPUT, OUTPUT> {
     select.setParametersBuilder(parametersBuilder);
     select.setOutputReader(outputReader);
     select.setCondition(condition);
-    return appendSelect(select);
-  }
-
-  public NormTransaction<INPUT, OUTPUT> appendSelect(NormSelect<INPUT, OUTPUT> select) {
     return appendOperation(select);
   }
 
@@ -68,10 +63,6 @@ public class NormTransaction<INPUT, OUTPUT> {
     insert.setParametersBuilder(parametersBuilder);
     insert.setOutputReader(outputReader);
     insert.setCondition(condition);
-    return appendInsert(insert);
-  }
-
-  public NormTransaction<INPUT, OUTPUT> appendInsert(NormInsert<INPUT, OUTPUT> insert) {
     return appendOperation(insert);
   }
 
@@ -85,10 +76,6 @@ public class NormTransaction<INPUT, OUTPUT> {
     update.setParametersBuilder(parametersBuilder);
     update.setOutputReader(outputReader);
     update.setCondition(condition);
-    return appendUpdate(update);
-  }
-
-  public NormTransaction<INPUT, OUTPUT> appendUpdate(NormUpdate<INPUT, OUTPUT> update) {
     return appendOperation(update);
   }
 
@@ -102,10 +89,6 @@ public class NormTransaction<INPUT, OUTPUT> {
     delete.setParametersBuilder(parametersBuilder);
     delete.setOutputReader(outputReader);
     delete.setCondition(condition);
-    return appendDelete(delete);
-  }
-
-  public NormTransaction<INPUT, OUTPUT> appendDelete(NormUpdate<INPUT, OUTPUT> delete) {
     return appendOperation(delete);
   }
 
@@ -119,10 +102,6 @@ public class NormTransaction<INPUT, OUTPUT> {
     call.setParametersBuilder(parametersBuilder);
     call.setOutputReader(outputReader);
     call.setCondition(condition);
-    return appendCallable(call);
-  }
-
-  public NormTransaction<INPUT, OUTPUT> appendCallable(NormCall<INPUT, OUTPUT> call) {
     return appendOperation(call);
   }
 
@@ -146,6 +125,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     return execute(connectionSupplier, input);
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public OUTPUT execute(NormConnectionSupplier connectionSupplier, INPUT input) throws SQLException {
     if (connectionSupplier == null) {
       throw new NormTransactionException("No connection supplier was provided for this transaction");
