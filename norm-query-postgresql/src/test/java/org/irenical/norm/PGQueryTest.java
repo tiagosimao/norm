@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.irenical.norm.query.postgresql.PostgresQueryBuilder;
 import org.irenical.norm.query.postgresql.templates.ExpressionTemplate;
+import org.irenical.norm.query.postgresql.templates.InsertTemplate;
 import org.irenical.norm.query.postgresql.templates.SelectTemplate;
 import org.junit.Assert;
 import org.junit.Test;
@@ -107,6 +108,20 @@ public class PGQueryTest {
 
     Assert.assertEquals(expected, select.getQuery());
     Assert.assertEquals(expectedParams, select.getParameters());
+  }
+  
+  @Test
+  public void testInsert() {
+    String expectedQuery = "insert into your_mom(name) values(?)";
+    List<Object> expectedParams = Arrays.asList("Johnson");
+    
+    InsertTemplate insert = builder.createInsert().into("your_mom").columns("name").values("Johnson");
+    Assert.assertEquals(expectedQuery, insert.getQuery());
+    Assert.assertEquals(expectedParams, insert.getParameters());
+    
+    insert = builder.createInsert("your_mom").columns("name").values("Johnson");
+    Assert.assertEquals(expectedQuery, insert.getQuery());
+    Assert.assertEquals(expectedParams, insert.getParameters());
   }
 
 }

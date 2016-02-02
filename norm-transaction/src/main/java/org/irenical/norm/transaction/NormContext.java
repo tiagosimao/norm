@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +143,7 @@ public class NormContext<INPUT, OUTPUT> {
       List<Map<String, Object>> generatedKeys = new LinkedList<Map<String, Object>>();
       try (ResultSet resultset = preparedStatement.getGeneratedKeys()) {
         while (resultset.next()) {
-          Map<String, Object> row = new HashMap<>();
+          Map<String, Object> row = new LinkedHashMap<>();
           ResultSetMetaData metadata = resultset.getMetaData();
           int columnCount = metadata.getColumnCount();
           for (int i = 1; i <= columnCount; i++) {
