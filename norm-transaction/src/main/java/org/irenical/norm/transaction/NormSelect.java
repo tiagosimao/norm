@@ -20,7 +20,7 @@ public class NormSelect<INPUT, OUTPUT> extends NormOperation<INPUT, OUTPUT> {
     try (PreparedStatement statement = JDBChops.prepareStatementForSelectOrUpdate(context.getConnection(), query, parametersBuilder == null ? null : parametersBuilder.apply(context))) {
       try (ResultSet resultSet = statement.executeQuery()) {
         context.setPreparedStatement(statement);
-        context.setResultset(resultSet);
+        context.setResultSet(resultSet);
         if (outputReader != null) {
           return outputReader.toOutput(context);
         }

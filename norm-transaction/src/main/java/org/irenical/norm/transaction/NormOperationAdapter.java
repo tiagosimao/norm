@@ -2,7 +2,7 @@ package org.irenical.norm.transaction;
 
 import java.util.function.Function;
 
-public class OperationAdapter<INPUT, OUTPUT, OP_INPUT, OP_OUTPUT> {
+public class NormOperationAdapter<INPUT, OUTPUT, OP_INPUT, OP_OUTPUT> {
 
   private final NormOperation<OP_INPUT, OP_OUTPUT> operation;
 
@@ -10,7 +10,7 @@ public class OperationAdapter<INPUT, OUTPUT, OP_INPUT, OP_OUTPUT> {
 
   private Function<OUTPUT, OP_OUTPUT> outputAdapter;
   
-  protected OperationAdapter(NormOperation<OP_INPUT, OP_OUTPUT> operation){
+  protected NormOperationAdapter(NormOperation<OP_INPUT, OP_OUTPUT> operation){
     this.operation=operation;
   }
 
