@@ -27,7 +27,7 @@ public class NormContext<INPUT, OUTPUT> {
 
   private CallableStatement callableStatement;
 
-  private ResultSet resultset;
+  private ResultSet resultSet;
 
   private Integer updatedRows;
 
@@ -57,7 +57,7 @@ public class NormContext<INPUT, OUTPUT> {
   protected void forward() {
     setCallableStatement(null);
     setPreparedStatement(null);
-    setResultset(null);
+    setResultSet(null);
     setUpdatedRows(null);
     generatedKeys = null;
   }
@@ -90,8 +90,8 @@ public class NormContext<INPUT, OUTPUT> {
     this.preparedStatement = preparedStatement;
   }
 
-  protected void setResultset(ResultSet resultset) {
-    this.resultset = resultset;
+  protected void setResultSet(ResultSet resultset) {
+    this.resultSet = resultset;
   }
 
   public CallableStatement getCallableStatement() {
@@ -102,8 +102,8 @@ public class NormContext<INPUT, OUTPUT> {
     return preparedStatement;
   }
 
-  public ResultSet getResultset() {
-    return resultset;
+  public ResultSet getResultSet() {
+    return resultSet;
   }
 
   protected void setUpdatedRows(Integer updatedRows) {

@@ -11,7 +11,7 @@ import org.irenical.norm.transaction.error.NormTransactionException;
 
 public class NormTransaction<INPUT, OUTPUT> {
 
-  private final List<OperationAdapter<INPUT, OUTPUT, ?, ?>> adapters = new CopyOnWriteArrayList<>();
+  private final List<NormOperationAdapter<INPUT, OUTPUT, ?, ?>> adapters = new CopyOnWriteArrayList<>();
 
   private NormHook hook;
 
@@ -110,7 +110,7 @@ public class NormTransaction<INPUT, OUTPUT> {
   }
 
   public <OPERATION_INPUT, OPERATION_OUTPUT> NormTransaction<INPUT, OUTPUT> appendOperation(NormOperation<OPERATION_INPUT, OPERATION_OUTPUT> operation, Function<INPUT, OPERATION_INPUT> inputAdapter, Function<OUTPUT, OPERATION_OUTPUT> outputAdapter) {
-    OperationAdapter<INPUT,OUTPUT,OPERATION_INPUT,OPERATION_OUTPUT> adapter = new OperationAdapter<>(operation);
+    NormOperationAdapter<INPUT,OUTPUT,OPERATION_INPUT,OPERATION_OUTPUT> adapter = new NormOperationAdapter<>(operation);
     adapter.setInputAdapter(inputAdapter);
     adapter.setOutputAdapter(outputAdapter);
     adapters.add(adapter);
@@ -142,7 +142,7 @@ public class NormTransaction<INPUT, OUTPUT> {
     }
     context.setConnection(connection);
     try {
-      for (OperationAdapter<INPUT, OUTPUT, ?, ?> adapter : new LinkedList<>(adapters)) {
+      for (NormOperationAdapter<INPUT, OUTPUT, ?, ?> adapter : new LinkedList<>(adapters)) {
         // clear state
         context.forward();
         

@@ -26,7 +26,7 @@ public class TransactionTest {
   private Function<NormContext<Object, Object>, Iterable<Object>> innocuousParameterBuilder = context -> new ArrayList<>();
   private NormOutputReader<Object, Object> innocuousResultConsumer = context -> null;
   private NormOutputReader<Object, Object> assertNotNullResultConsumer = (context) -> {
-    Assert.assertNotNull(context.getResultset());
+    Assert.assertNotNull(context.getResultSet());
     return null;
   };
   private NormOutputReader<Object, Object> failResultConsumer = (context) -> {
@@ -99,7 +99,7 @@ public class TransactionTest {
 
     t.appendInsert(context -> "INSERT INTO PEOPLE (NAME) VALUES (?)", context -> Arrays.asList(context.getInput()), NormContext::getFirstGeneratedKeyAsInteger);
     t.appendSelect(context -> "SELECT PERSON_ID FROM PEOPLE WHERE NAME=?", context -> Arrays.asList(context.getInput()), context -> {
-      ResultSet rs = context.getResultset();
+      ResultSet rs = context.getResultSet();
       Assert.assertTrue(rs.next());
       Assert.assertEquals(context.getCurrentOutput(), (Integer) rs.getInt(1));
       return context.getCurrentOutput();
@@ -110,7 +110,7 @@ public class TransactionTest {
     });
 
     t.appendSelect(context -> "SELECT PERSON_ID FROM PEOPLE WHERE NAME=?", context -> Arrays.asList("Mr. " + context.getInput()), context -> {
-      ResultSet rs = context.getResultset();
+      ResultSet rs = context.getResultSet();
       rs.next();
       Assert.assertEquals(context.getCurrentOutput(), (Integer) rs.getInt(1));
       return context.getCurrentOutput();
@@ -127,7 +127,7 @@ public class TransactionTest {
     });
 
     t.appendSelect(context -> "SELECT PERSON_ID FROM PEOPLE WHERE NAME=?", context -> Arrays.asList("Mr. " + context.getInput()), context -> {
-      ResultSet rs = context.getResultset();
+      ResultSet rs = context.getResultSet();
       Assert.assertFalse(rs.next());
       return context.getCurrentOutput();
     });
@@ -197,7 +197,7 @@ public class TransactionTest {
     selectByName.setQueryBuilder(context -> "SELECT PERSON_ID FROM PEOPLE WHERE NAME=?");
     selectByName.setParametersBuilder(context -> Arrays.asList(context.getInput()));
     selectByName.setOutputReader(context -> {
-      ResultSet rs = context.getResultset();
+      ResultSet rs = context.getResultSet();
       Assert.assertTrue(rs.next());
       return (Integer) rs.getInt(1);
     });
