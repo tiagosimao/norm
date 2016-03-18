@@ -26,7 +26,7 @@ public final class JDBChops {
     return statement;
   }
 
-  public static PreparedStatement prepareStatementForCall(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
+  public static CallableStatement prepareStatementForCall(Connection connection, String query, Iterable<Object> parameters) throws SQLException {
     CallableStatement statement = connection.prepareCall(query);
     if (parameters != null) {
       int idx = 0;
