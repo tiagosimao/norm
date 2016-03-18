@@ -8,4 +8,4 @@ target
 *.iml
 .project
 .classpath
-derby.log
+*/derby.log
