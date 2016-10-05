@@ -7,9 +7,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -30,8 +29,6 @@ public class NormContext<INPUT, OUTPUT> {
   private ResultSet resultSet;
 
   private Integer updatedRows;
-
-  private List<Map<String, Object>> generatedKeys;
 
   private Function<INPUT, ?> inputAdapter;
   
@@ -59,7 +56,6 @@ public class NormContext<INPUT, OUTPUT> {
     setPreparedStatement(null);
     setResultSet(null);
     setUpdatedRows(null);
-    generatedKeys = null;
   }
 
   protected void setCurrentOutput(OUTPUT output) {
@@ -90,8 +86,8 @@ public class NormContext<INPUT, OUTPUT> {
     this.preparedStatement = preparedStatement;
   }
 
-  protected void setResultSet(ResultSet resultset) {
-    this.resultSet = resultset;
+  protected void setResultSet(ResultSet resultSet) {
+    this.resultSet = resultSet;
   }
 
   public CallableStatement getCallableStatement() {
@@ -114,6 +110,10 @@ public class NormContext<INPUT, OUTPUT> {
     return updatedRows;
   }
 
+  public void setInputAdapter(Function<INPUT, ?> inputAdapter) {
+    this.inputAdapter = inputAdapter;
+  }
+
   public Integer getFirstGeneratedKeyAsInteger() throws SQLException {
     Object got = getFirstGeneratedKey();
     if (got instanceof Number) {
@@ -129,36 +129,14 @@ public class NormContext<INPUT, OUTPUT> {
   }
 
   public Map<String, Object> getFirstGeneratedKeys() throws SQLException {
-    List<Map<String, Object>> generatedKeys = getGeneratedKeys();
-    return generatedKeys.isEmpty() ? null : generatedKeys.get(0);
+    Iterator<Map<String, Object>> keysIterator = getGeneratedKeys().iterator();
+    return keysIterator.hasNext() ? keysIterator.next() : Collections.emptyMap();
   }
 
-  public List<Map<String, Object>> getGeneratedKeys() throws SQLException {
-    loadGeneratedKeys();
-    return generatedKeys;
-  }
+  public Iterable<Map<String,Object>> getGeneratedKeys() throws SQLException {
+    ResultSet generatedKeysResultSet = preparedStatement.getGeneratedKeys();
 
-  private void loadGeneratedKeys() throws SQLException {
-    if (generatedKeys == null) {
-      List<Map<String, Object>> generatedKeys = new LinkedList<Map<String, Object>>();
-      try (ResultSet resultset = preparedStatement.getGeneratedKeys()) {
-        while (resultset.next()) {
-          Map<String, Object> row = new LinkedHashMap<>();
-          ResultSetMetaData metadata = resultset.getMetaData();
-          int columnCount = metadata.getColumnCount();
-          for (int i = 1; i <= columnCount; i++) {
-            String columnName = metadata.getColumnName(i);
-            row.put(columnName, resultset.getObject(columnName));
-          }
-          generatedKeys.add(Collections.unmodifiableMap(row));
-        }
-      }
-      this.generatedKeys = Collections.unmodifiableList(generatedKeys);
-    }
-  }
-
-  public void setInputAdapter(Function<INPUT, ?> inputAdapter) {
-    this.inputAdapter = inputAdapter;
+    return () -> new NormResultSetIterator(generatedKeysResultSet);
   }
 
 }

@@ -1,7 +1,7 @@
 package org.irenical.norm.transaction;
 
 public class PersonBean {
-  
+
   private String name;
   
   public void setName(String name) {
